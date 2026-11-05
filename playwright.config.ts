@@ -45,6 +45,9 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
+  expect: {
+    timeout: process.env.CI ? 10_000 : 5_000,
+  },
 
   /* Configure projects for major browsers */
   projects: [

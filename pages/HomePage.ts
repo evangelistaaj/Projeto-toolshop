@@ -1,4 +1,4 @@
-import { type Page, type Locator } from '@playwright/test';
+import { type Page, type Locator, expect } from '@playwright/test';
 
 export class HomePage {
     readonly page: Page;
@@ -19,6 +19,8 @@ export class HomePage {
 
     async abrir() {
         await this.page.goto('/');
+        // Esperar pela lista inicial de produtos antes de fazer qualquer coisa
+        await expect(this.nomesProdutos.first()).toBeVisible();
     }
 
     async pesquisar(termo: string) {

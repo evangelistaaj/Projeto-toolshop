@@ -1,4 +1,4 @@
-import { type Page, type Locator } from '@playwright/test';
+import { type Page, type Locator, expect } from '@playwright/test';
 
 export class LoginPage {
     // 1. A LISTA dos elementos desta página
@@ -20,6 +20,7 @@ export class LoginPage {
     // 3. AÇÕES que se podem fazer nesta página
     async abrir() {
         await this.page.goto('/auth/login');
+        await expect(this.email).toBeVisible();
     }
 
     async fazerLogin(utilizador: string, password: string) {
