@@ -1,6 +1,7 @@
 
 # Playwright
 node_modules/
+gravacao.spec.ts
 /test-results/
 /playwright-report/
 /blob-report/
