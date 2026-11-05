@@ -1,6 +1,6 @@
 # 🎭 Testes Automatizados com Playwright + BDD – Toolshop
 
-![Playwright Tests](https://github.com/evangelistaaj/playwright-toolshop/actions/workflows/playwright.yml/badge.svg)
+![Playwright Tests](https://github.com/evangelistaaj/Projeto-toolshop/actions/workflows/playwright.yml/badge.svg)
 
 Projeto de automação de testes end-to-end (E2E) da aplicação de e-commerce [Practice Software Testing – Toolshop](https://practicesoftwaretesting.com/), desenvolvido com **Playwright**, **TypeScript** e **BDD (Gherkin)**.
 
