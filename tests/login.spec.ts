@@ -17,7 +17,7 @@ test.describe('Login', () => {
 
     test('login com password errada mostra erro', async ({ page }) => {
         const loginPage = new LoginPage(page);
-        
+
         await loginPage.abrir();
         await loginPage.fazerLogin('customer@practicesoftwaretesting.com', 'welcome');
 

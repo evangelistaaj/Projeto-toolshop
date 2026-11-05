@@ -9,11 +9,11 @@ test.describe('Pesquisa de produtos', () => {
         await homePage.abrir();
         await homePage.pesquisar('pliers');
 
-       // A legenda confirma o que foi pesquisado
+        // A legenda confirma o que foi pesquisado
         await expect(homePage.legendaPesquisa).toContainText('pliers');
 
         // Há pelo menos um resultado
-        await expect(homePage.nomesProdutos).toBeVisible();
+        await expect(homePage.nomesProdutos.first()).toBeVisible();
 
         // Nenhum resultado SEM a palavra "pliers"
         await expect(homePage.nomesProdutos.filter({ hasNotText: /pliers/i })).toHaveCount(0);
