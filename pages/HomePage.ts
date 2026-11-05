@@ -6,6 +6,7 @@ export class HomePage {
     readonly botaoPesquisar: Locator;
     readonly legendaPesquisa: Locator;
     readonly nomesProdutos: Locator;
+    readonly semResultados: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -13,6 +14,7 @@ export class HomePage {
         this.botaoPesquisar = page.getByTestId('search-submit');
         this.legendaPesquisa = page.getByTestId('search-caption');
         this.nomesProdutos = page.getByTestId('product-name');
+        this.semResultados = page.getByTestId('no-results');
     }
 
     async abrir() {

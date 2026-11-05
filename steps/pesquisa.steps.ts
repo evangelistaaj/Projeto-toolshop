@@ -21,3 +21,12 @@ Then('todos os resultados contêm {string}', async ({ page }, termo: string) => 
     await expect(homePage.nomesProdutos.filter({ hasNotText: new RegExp(termo, 'i') })).toHaveCount(0);
 });
 
+Then('vejo uma mensagem de {string}', async ({ page }, mensagem: string) => {
+    const homePage = new HomePage(page);
+    await expect(homePage.semResultados).toContainText(mensagem);
+});
+
+Then('sou informado de que não existem produtos', async ({ page }) => {
+    const homePage = new HomePage(page);
+    await expect(homePage.semResultados).toBeVisible();
+});

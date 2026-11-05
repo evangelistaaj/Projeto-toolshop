@@ -14,3 +14,8 @@ Funcionalidade: Pesquisa de produtos
       | pliers |
       | hammer |
       | saw    |
+
+  Cenário: Pesquisar sem resultados
+    Dado que estou na página de produtos
+    Quando pesquiso por "produto-inexistente-xyz123"
+    Então sou informado de que não existem produtos

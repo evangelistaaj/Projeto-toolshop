@@ -46,6 +46,7 @@ Funcionalidade: Pesquisa de produtos
 
 **Pesquisa de produtos** (`features/pesquisa.feature`)
 - Pesquisa por produto existente, validando que todos os resultados contêm o termo pesquisado (Esquema do Cenário com 3 exemplos)
+- Pesquisa por produto inexistente (mensagem de que não existem produtos)
 
 **Próximos cenários**
 - Pesquisa sem resultados
