@@ -30,7 +30,8 @@ export class HomePage {
 
     async abrir() {
         await this.page.goto('/', { waitUntil: 'domcontentloaded' });
-        await expect(this.nomesProdutos.first()).toBeVisible();
+        // O primeiro carregamento é o mais lento: damos-lhe mais tempo
+        await expect(this.nomesProdutos.first()).toBeVisible({ timeout: 15_000 });
     }
 
     async pesquisar(termo: string) {
