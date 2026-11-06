@@ -107,6 +107,7 @@ Algumas observações sobre o comportamento da aplicação, encontradas ao inves
 - **Morada validada pelo código postal**: o registo só aceita moradas coerentes com o código postal, e o formulário preenche-as automaticamente após uma procura na API.
 - **Categorias vs. nomes de produtos**: alguns produtos pertencem a uma categoria sem a incluírem no nome (por exemplo, *Bolt Cutters* em *Pliers*), o que tornou necessária a validação pela lista exata de produtos.
 - **Valores limite sem resultados**: não existem produtos no intervalo de preço entre 190 e 200, um caso coberto por um cenário próprio.
+- **Procura de morada duplicada**: o formulário de registo faz a procura do código postal duas vezes, e uma resposta atrasada pode apagar o distrito já preenchido pelo utilizador.
 
 ## 📁 Estrutura do projeto
 

@@ -44,38 +44,45 @@ export class RegisterPage {
     }
 
     async registar(utilizador: Utilizador) {
+        // 1. Dados pessoais
         await this.campoNome.fill(utilizador.nome);
         await this.campoApelido.fill(utilizador.apelido);
         await this.campoDataNascimento.fill(utilizador.dataNascimento);
 
-        // 1. Escutar a procura da morada antes de a disparar
+        // 2. Escutar a procura da morada antes de a disparar
         const procuraMorada = this.page.waitForResponse(resposta =>
             resposta.url().includes('postcode-lookup') &&
             resposta.url().includes(`house_number=${encodeURIComponent(utilizador.numeroPorta)}`)
         );
 
-        // 2. Os campos que disparam a procura
+        // 3. Os campos que disparam a procura
         await this.campoPais.selectOption(utilizador.pais);
         await this.campoCodigoPostal.fill(utilizador.codigoPostal);
         await this.campoNumeroPorta.fill(utilizador.numeroPorta);
 
-        // 3. Esperar que a procura termine e que o site preencha a morada
+        // 4. Esperar que a procura termine e que o site preencha a morada
         await procuraMorada;
         await expect(this.loadingMorada).toBeHidden();
 
-        // 4. A rua e a cidade vêm do código postal: confirmamos que o site as preencheu
-        await expect(this.campoRua).not.toHaveValue('');
-        await expect(this.campoCidade).not.toHaveValue('');
-
-        // 5. O distrito: só preenchemos se o site o deixar vazio
-        if ((await this.campoDistrito.inputValue()) === '') {
-            await this.campoDistrito.fill(utilizador.distrito);
-        }
-
+        // 5. Restantes campos
         await this.campoTelefone.fill(utilizador.telefone);
         await this.campoEmail.fill(utilizador.email);
         await this.campoPassword.fill(utilizador.password);
 
+        // 6. O distrito no fim (pode ser apagado por uma procura atrasada)
+        await expect(async () => {
+            if ((await this.campoDistrito.inputValue()) === '') {
+                await this.campoDistrito.fill(utilizador.distrito);
+            }
+            await expect(this.campoDistrito).not.toHaveValue('', { timeout: 1_000 });
+        }).toPass({ timeout: 10_000 });
+
+        // 7. Rede de segurança: tudo preenchido e botão ativo antes de submeter
+        await expect(this.campoRua).not.toHaveValue('');
+        await expect(this.campoCidade).not.toHaveValue('');
+        await expect(this.botaoRegistar).toBeEnabled();
+
+        // 8. Um único clique, no fim
         await this.botaoRegistar.click();
     }
 }
