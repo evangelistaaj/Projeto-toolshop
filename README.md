@@ -2,6 +2,10 @@
 
 ![Playwright Tests](https://github.com/evangelistaaj/Projeto-toolshop/actions/workflows/playwright.yml/badge.svg)
 
+> **Em resumo:** testes E2E de uma loja online, escritos primeiro como cenários funcionais em **Gherkin (português)** e automatizados com **Playwright + TypeScript**. Destaques: Page Object Model, dados de teste gerados com **Faker**, sincronização sem esperas fixas, CI no **GitHub Actions** e uma secção de [descobertas](#-descobertas-durante-a-automação) feitas ao investigar falhas.
+>
+> 🇬🇧 **In short:** E2E test suite for an e-commerce demo app, written first as functional scenarios in Gherkin (Portuguese) and automated with Playwright + TypeScript, using the Page Object Model, Faker-generated test data, wait-free synchronization and GitHub Actions CI.
+
 Projeto de automação de testes end-to-end (E2E) da aplicação de e-commerce [Practice Software Testing – Toolshop](https://practicesoftwaretesting.com/), desenvolvido com **Playwright**, **TypeScript** e **BDD (Gherkin)**.
 
 Os cenários são escritos primeiro como **testes funcionais em Gherkin (português)** e depois ligados à automação, seguindo o fluxo: **cenário funcional → step definitions → Page Objects**.
@@ -89,7 +93,7 @@ Todos os cenários correm em **3 browsers**: Chromium, Firefox e WebKit.
 - **Isolamento de dados de teste**: cada cenário cria os seus próprios dados com uma fábrica (`utils/dados.ts`) baseada no Faker, sem depender de contas partilhadas
 - **Fixtures para partilhar estado entre steps**: cada cenário recebe o seu próprio contexto isolado, seguro em execução paralela
 - **Sincronização sem esperas fixas**: cada ação que recarrega dados espera pela resposta da API antes de o teste continuar
-- **Regras de negócio respeitadas**: a morada do registo é a devolvida pela procura do código postal, tal como acontece com um utilizador real
+- **Comportamento real do utilizador**: no registo, a rua e a cidade são as sugeridas pela procura do código postal, tal como faria um utilizador real
 
 **Execução e evidências**
 - **Tags para controlar a execução**: `@sem-ci` (só local) e `@wip` (trabalho em curso)
@@ -104,10 +108,10 @@ Algumas observações sobre o comportamento da aplicação, encontradas ao inves
 
 - **Resultados de filtro desatualizados**: quando o filtro de preço muda várias vezes seguidas (por exemplo, com o teclado), as respostas da API podem chegar fora de ordem e a lista mostra produtos que não correspondem ao filtro visível. Os testes contornam isto esperando por cada resposta antes da ação seguinte.
 - **Bloqueio de contas partilhadas**: as contas de demonstração ficam bloqueadas após várias tentativas de login falhadas, o que motivou a criação de utilizadores próprios em cada cenário.
-- **Morada validada pelo código postal**: o registo só aceita moradas coerentes com o código postal, e o formulário preenche-as automaticamente após uma procura na API.
+- **Morada preenchida pelo código postal**: após uma procura na API, o formulário de registo preenche automaticamente a rua e a cidade, mas não o distrito, que fica a cargo do utilizador. Num teste manual, o servidor aceitou um distrito incoerente com a cidade (por exemplo, *Amora* com o distrito *Porto*), ou seja, essa coerência não é validada.
+- **Procura de morada duplicada**: o formulário de registo faz a procura do código postal duas vezes, e uma resposta atrasada pode apagar o distrito já preenchido pelo utilizador.
 - **Categorias vs. nomes de produtos**: alguns produtos pertencem a uma categoria sem a incluírem no nome (por exemplo, *Bolt Cutters* em *Pliers*), o que tornou necessária a validação pela lista exata de produtos.
 - **Valores limite sem resultados**: não existem produtos no intervalo de preço entre 190 e 200, um caso coberto por um cenário próprio.
-- **Procura de morada duplicada**: o formulário de registo faz a procura do código postal duas vezes, e uma resposta atrasada pode apagar o distrito já preenchido pelo utilizador.
 
 ## 📁 Estrutura do projeto
 
