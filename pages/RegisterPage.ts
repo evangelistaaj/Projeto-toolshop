@@ -70,6 +70,8 @@ export class RegisterPage {
         await this.campoPassword.fill(utilizador.password);
 
         // 6. O distrito no fim (pode ser apagado por uma procura atrasada)
+        // Contorno do bug #2: uma procura de morada atrasada pode apagar o distrito.
+        // Ver: https://github.com/evangelistaaj/Projeto-toolshop/issues/2
         await expect(async () => {
             if ((await this.campoDistrito.inputValue()) === '') {
                 await this.campoDistrito.fill(utilizador.distrito);
