@@ -104,12 +104,12 @@ Todos os cenários correm em **3 browsers**: Chromium, Firefox e WebKit.
 
 ## 🔍 Descobertas durante a automação
 
-Algumas observações sobre o comportamento da aplicação, encontradas ao investigar falhas dos testes:
+Algumas observações sobre o comportamento da aplicação, encontradas ao investigar falhas dos testes. As que podem ser defeitos foram registadas como Issues, com passos para reproduzir e evidências.
 
-- **Resultados de filtro desatualizados**: quando o filtro de preço muda várias vezes seguidas (por exemplo, com o teclado), as respostas da API podem chegar fora de ordem e a lista mostra produtos que não correspondem ao filtro visível. Os testes contornam isto esperando por cada resposta antes da ação seguinte.
+- **Resultados de filtro desatualizados** ([bug #1](https://github.com/evangelistaaj/Projeto-toolshop/issues/1)): quando o filtro de preço muda várias vezes seguidas (por exemplo, com o teclado), as respostas da API podem chegar fora de ordem e a lista mostra produtos que não correspondem ao filtro visível. Os testes contornam isto esperando por cada resposta antes da ação seguinte.
+- **Procura de morada duplicada** ([bug #2](https://github.com/evangelistaaj/Projeto-toolshop/issues/2)): o formulário de registo faz a procura do código postal duas vezes, e uma resposta atrasada pode apagar o distrito já preenchido pelo utilizador.
+- **Distrito sem validação** ([questão #3](https://github.com/evangelistaaj/Projeto-toolshop/issues/3)): a procura do código postal preenche a rua e a cidade, mas não o distrito. Num teste manual, o servidor aceitou um distrito incoerente com a cidade (por exemplo, *Amora* com o distrito *Porto*). Fica a questão sobre se esta validação é esperada.
 - **Bloqueio de contas partilhadas**: as contas de demonstração ficam bloqueadas após várias tentativas de login falhadas, o que motivou a criação de utilizadores próprios em cada cenário.
-- **Morada preenchida pelo código postal**: após uma procura na API, o formulário de registo preenche automaticamente a rua e a cidade, mas não o distrito, que fica a cargo do utilizador. Num teste manual, o servidor aceitou um distrito incoerente com a cidade (por exemplo, *Amora* com o distrito *Porto*), ou seja, essa coerência não é validada.
-- **Procura de morada duplicada**: o formulário de registo faz a procura do código postal duas vezes, e uma resposta atrasada pode apagar o distrito já preenchido pelo utilizador.
 - **Categorias vs. nomes de produtos**: alguns produtos pertencem a uma categoria sem a incluírem no nome (por exemplo, *Bolt Cutters* em *Pliers*), o que tornou necessária a validação pela lista exata de produtos.
 - **Valores limite sem resultados**: não existem produtos no intervalo de preço entre 190 e 200, um caso coberto por um cenário próprio.
 
