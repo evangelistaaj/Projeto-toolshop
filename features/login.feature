@@ -5,9 +5,10 @@ Funcionalidade: Login
   Para gerir o meu perfil e as minhas encomendas
 
   @sem-ci
-  Cenário: Login com utilizador válido
-    Dado que estou na página de login
-    Quando faço login com "customer2@practicesoftwaretesting.com" e "welcome01"
+  Cenário: Login com uma conta nova
+    Dado que tenho uma conta registada
+    E que estou na página de login
+    Quando faço login com a conta registada
     Então vejo a página "My account"
 
   Cenário: Login com password errada

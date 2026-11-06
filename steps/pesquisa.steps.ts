@@ -1,8 +1,6 @@
-import { createBdd } from 'playwright-bdd';
+import { Given, When, Then } from './fixtures';
 import { expect } from '@playwright/test';
 import { HomePage } from '../pages/HomePage';
-
-const { Given, When, Then } = createBdd();
 
 Given('que estou na página de produtos', async ({ page }) => {
     const homePage = new HomePage(page);

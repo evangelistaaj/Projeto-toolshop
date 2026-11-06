@@ -1,9 +1,7 @@
 import { expect } from '@playwright/test';
-import { createBdd } from 'playwright-bdd';
 import { LoginPage } from '../pages/LoginPage';
 import { AccountPage } from '../pages/AccountPage';
-
-const { Given, When, Then } = createBdd();
+import { Given, When, Then } from './fixtures';
 
 Given('que estou na página de login', async ({ page }) => {
     const loginPage = new LoginPage(page);

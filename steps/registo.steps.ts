@@ -1,10 +1,8 @@
 import { expect } from '@playwright/test';
-import { createBdd } from 'playwright-bdd';
+import { Given, When, Then } from './fixtures';
 import { RegisterPage } from '../pages/RegisterPage';
 import { LoginPage } from '../pages/LoginPage';
 import { gerarUtilizador } from '../utils/dados';
-
-const { Given, When, Then } = createBdd();
 
 Given('que estou na página de registo', async ({ page }) => {
     const registerPage = new RegisterPage(page);
