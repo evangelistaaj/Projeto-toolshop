@@ -1,11 +1,6 @@
-import { Given, When, Then } from './fixtures';
+import { When, Then } from './fixtures';
 import { expect } from '@playwright/test';
 import { HomePage } from '../pages/HomePage';
-
-Given('que estou na página de produtos', async ({ page }) => {
-    const homePage = new HomePage(page);
-    await homePage.abrir();
-});
 
 When('pesquiso por {string}', async ({ page }, termo: string) => {
     const homePage = new HomePage(page);

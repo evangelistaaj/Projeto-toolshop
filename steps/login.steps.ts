@@ -1,12 +1,7 @@
 import { expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
 import { AccountPage } from '../pages/AccountPage';
-import { Given, When, Then } from './fixtures';
-
-Given('que estou na página de login', async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await loginPage.abrir();
-});
+import { When, Then } from './fixtures';
 
 When('faço login com {string} e {string}', async ({ page }, email: string, password: string) => {
     const loginPage = new LoginPage(page);
