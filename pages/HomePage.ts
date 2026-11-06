@@ -58,6 +58,10 @@ export class HomePage {
         const salto = (fim - inicio) / 10;
 
         await this.pegaPrecoMin.focus();
+        
+        // Contorno do bug #1: com várias alterações seguidas, as respostas chegam fora de ordem
+        // e a lista mostra resultados desatualizados. Por isso esperamos que a lista recarregue a cada tecla.
+        // Ver: https://github.com/evangelistaaj/Projeto-toolshop/issues/1
         await this.premirTecla(this.pegaPrecoMin, 'Home');
         let atual = inicio;
         while (valor - atual >= salto) {
