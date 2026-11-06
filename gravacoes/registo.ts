@@ -1,0 +1,33 @@
+import { test, expect } from '@playwright/test';
+
+test('test', async ({ page }) => {
+  await page.goto('https://practicesoftwaretesting.com/auth/register');
+  await page.locator('[data-test="first-name"]').click();
+  await page.locator('[data-test="first-name"]').fill('Arthur');
+  await page.locator('[data-test="last-name"]').click();
+  await page.locator('[data-test="last-name"]').fill('Evangelista');
+  await page.locator('[data-test="dob"]').click();
+  await page.locator('[data-test="dob"]').fill('1980-02-12');
+  await page.locator('[data-test="country"]').selectOption('BR');
+  await page.locator('[data-test="postal_code"]').click();
+  await page.locator('[data-test="postal_code"]').fill('2810-001');
+  await page.locator('[data-test="house_number"]').click();
+  await page.locator('[data-test="country"]').selectOption('PT');
+  await page.locator('[data-test="house_number"]').click();
+  await page.locator('[data-test="house_number"]').fill('10');
+  await page.locator('[data-test="street"]').click();
+  await page.locator('[data-test="street"]').click();
+  await page.locator('[data-test="street"]').fill('Rua Almada');
+  await page.locator('[data-test="city"]').click();
+  await page.locator('[data-test="city"]').fill('Almada');
+  await page.locator('[data-test="state"]').click();
+  await page.locator('[data-test="state"]').fill('Setubal');
+  await page.locator('[data-test="phone"]').click();
+  await page.locator('[data-test="phone"]').fill('911111111');
+  await page.locator('[data-test="phone"]').press('Tab');
+  await page.locator('[data-test="email"]').fill('a@a.com');
+  await page.locator('[data-test="password"]').click();
+  await page.locator('[data-test="password"]').fill('T3st3@claude!');
+  await page.locator('[data-test="register-submit"]').click();
+  await expect(page.getByRole('heading', { name: 'Login' })).toBeVisible();
+});

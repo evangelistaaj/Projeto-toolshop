@@ -4,6 +4,7 @@ Funcionalidade: Login
   Quero entrar na minha conta
   Para gerir o meu perfil e as minhas encomendas
 
+  @sem-ci
   Cenário: Login com utilizador válido
     Dado que estou na página de login
     Quando faço login com "customer2@practicesoftwaretesting.com" e "welcome01"

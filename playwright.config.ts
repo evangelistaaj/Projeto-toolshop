@@ -4,6 +4,7 @@ import { defineBddConfig } from 'playwright-bdd';
 const testDir = defineBddConfig({
   features: 'features/**/*.feature',
   steps: 'steps/**/*.ts',
+  tags: process.env.CI ? 'not @sem-ci and not @wip' : 'not @wip',
 });
 
 /**

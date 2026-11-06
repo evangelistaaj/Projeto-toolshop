@@ -7,6 +7,7 @@ export class LoginPage {
     readonly password: Locator;
     readonly botaoLogin: Locator;
     readonly mensagemErro: Locator;
+    readonly titulo: Locator;
 
     // 2. ONDE encontrar cada elemento
     constructor(page: Page) {
@@ -15,12 +16,13 @@ export class LoginPage {
         this.password = page.getByTestId('password');
         this.botaoLogin = page.getByTestId('login-submit');
         this.mensagemErro = page.getByTestId('login-error');
+        this.titulo = page.getByRole('heading', { name: 'Login' });
     }
 
     // 3. AÇÕES que se podem fazer nesta página
     async abrir() {
         await this.page.goto('/auth/login');
-        await expect(this.email).toBeVisible();
+        await expect(this.titulo).toBeVisible();
     }
 
     async fazerLogin(utilizador: string, password: string) {

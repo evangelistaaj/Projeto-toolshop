@@ -68,6 +68,8 @@ Todos os cenários correm em **3 browsers**: Chromium, Firefox e WebKit.
 - **Evidências automáticas em caso de falha**: screenshot, vídeo e trace
 - **Integração Contínua (CI)**: os cenários correm automaticamente no GitHub Actions a cada push
 
+> ℹ️ Cenários marcados com `@sem-ci` correm apenas localmente: o site usa proteção anti-bot (Cloudflare) para tráfego vindo de datacenters, como o GitHub Actions. Num projeto real, o CI correria contra um ambiente de testes sem essa proteção.
+
 ## 📁 Estrutura do projeto
 
 ```
