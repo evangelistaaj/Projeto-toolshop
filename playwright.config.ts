@@ -1,10 +1,23 @@
 import { defineConfig, devices } from '@playwright/test';
 import { defineBddConfig } from 'playwright-bdd';
 
+// Endereço da Toolshop: o site público por omissão, ou o que vier em BASE_URL
+// (ex.: http://localhost:4200 para a Toolshop local em Docker).
+const baseURL = process.env.BASE_URL ?? 'https://practicesoftwaretesting.com';
+const ambienteLocal = /\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(baseURL);
+
+// Tags que ficam de fora:
+// @wip      - sempre
+// @sem-ci   - na CI (criam contas)
+// @so-local - fora da Toolshop local (provocam falhas de login e bloqueios de conta)
+const tagsExcluidas = ['@wip'];
+if (process.env.CI) tagsExcluidas.push('@sem-ci');
+if (!ambienteLocal) tagsExcluidas.push('@so-local');
+
 const testDir = defineBddConfig({
   features: 'features/**/*.feature',
   steps: 'steps/**/*.ts',
-  tags: process.env.CI ? 'not @sem-ci and not @wip' : 'not @wip',
+  tags: tagsExcluidas.map((tag) => `not ${tag}`).join(' and '),
 });
 
 /**
@@ -36,7 +49,7 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('')`. */
     // baseURL: 'http://localhost:3000',
 
-    baseURL: 'https://practicesoftwaretesting.com',
+    baseURL,
     testIdAttribute: 'data-test',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */

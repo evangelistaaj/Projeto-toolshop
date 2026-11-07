@@ -2,7 +2,15 @@ import { expect } from '@playwright/test';
 import { Given, When } from './fixtures';
 import { RegisterPage } from '../pages/RegisterPage';
 import { LoginPage } from '../pages/LoginPage';
-import { gerarUtilizador } from '../utils/dados';
+import { gerarUtilizador, type Utilizador } from '../utils/dados';
+
+// Devolve o utilizador guardado na caixa, ou falha com uma mensagem clara
+function utilizadorDoCenario(contexto: { utilizador?: Utilizador }): Utilizador {
+    if (!contexto.utilizador) {
+        throw new Error('Nenhuma conta foi registada neste cenário');
+    }
+    return contexto.utilizador;
+}
 
 Given('que tenho uma conta registada', async ({ page, contexto }) => {
     const utilizador = gerarUtilizador();
@@ -16,9 +24,24 @@ Given('que tenho uma conta registada', async ({ page, contexto }) => {
 });
 
 When('faço login com a conta registada', async ({ page, contexto }) => {
-    if (!contexto.utilizador) {
-        throw new Error('Nenhuma conta foi registada neste cenário');
-    }
+    const utilizador = utilizadorDoCenario(contexto);
     const loginPage = new LoginPage(page);
-    await loginPage.fazerLogin(contexto.utilizador.email, contexto.utilizador.password);
+    await loginPage.fazerLogin(utilizador.email, utilizador.password);
+});
+
+When('faço login com a conta registada e a password {string}', async ({ page, contexto }, password: string) => {
+    const utilizador = utilizadorDoCenario(contexto);
+    const loginPage = new LoginPage(page);
+    await loginPage.fazerLogin(utilizador.email, password);
+});
+
+// Cada falha soma 1 tentativa. À 3.ª, a Toolshop bloqueia a conta
+// e passa a recusar até a password certa.
+When('falho o login {int} vezes com a conta registada', async ({ page, contexto }, vezes: number) => {
+    const utilizador = utilizadorDoCenario(contexto);
+    const loginPage = new LoginPage(page);
+    for (let i = 0; i < vezes; i++) {
+        await loginPage.fazerLogin(utilizador.email, `${utilizador.password}-errada`);
+        await expect(loginPage.mensagemErro).toContainText('Invalid email or password');
+    }
 });

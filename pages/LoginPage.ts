@@ -28,6 +28,13 @@ export class LoginPage {
     async fazerLogin(utilizador: string, password: string) {
         await this.email.fill(utilizador);
         await this.password.fill(password);
+        // Espera pela resposta da API de login antes de continuar.
+        // Assim dá para fazer várias tentativas seguidas sem se atropelarem:
+        // depois da 1.ª falha a mensagem de erro já está visível e não serve de sinal.
+        const resposta = this.page.waitForResponse(
+            (r) => r.url().includes('/users/login') && r.request().method() === 'POST',
+        );
         await this.botaoLogin.click();
+        await resposta;
     }
 }

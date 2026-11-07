@@ -119,7 +119,12 @@ export class HomePage {
     }
 
     async ordenarPor(valor: string) {
+        // Espera que a lista recarregue já ordenada, como nos outros filtros.
+        // Sem isto, um passo seguinte (ex.: mudar de página) podia correr antes
+        // de a ordenação chegar, e a resposta atrasada levava a lista de volta à página 1.
+        const listaRecarregada = this.page.waitForResponse(resposta => resposta.url().includes('/products'));
         await this.menuOrdenacao.selectOption(valor);
+        await listaRecarregada;
     }
 }
 
