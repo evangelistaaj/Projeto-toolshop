@@ -62,8 +62,11 @@ utils/      dados.ts (gerarUtilizador() com faker pt_PT)
 - **Page Objects:** criados dentro de cada passo (`new LoginPage(page)`). Locators `readonly`
   no construtor e métodos em português (`abrir`, `fazerLogin`, `registar`, `pesquisar`,
   `filtrarPorCategoria`, `filtrarPorPreco`, `irParaPagina`, `ordenarPor`).
-- **Sem seletores nem URLs dentro dos passos.** Locators por `getByTestId` (o atributo é
+- **Sem seletores dentro dos passos.** Locators por `getByTestId` (o atributo é
   `data-test`), depois `getByRole`, `getByLabel` e `getByText`.
+- **URLs:** navegar (`page.goto`) fica sempre no Page Object (método `abrir`). Verificar o
+  URL com `expect(page).toHaveURL(...)` pode ficar no passo, só com o caminho e sem o domínio
+  (`/auth\/login/`), para funcionar no site público e na Toolshop local.
 - **Esperas:** ações que recarregam a lista esperam pela resposta da API
   (`waitForResponse(r => r.url().includes('/products'))`, registado **antes** do clique).
   Asserções sobre listas usam `expect(async () => {...}).toPass()`. **Nunca `waitForTimeout`.**
