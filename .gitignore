@@ -8,3 +8,4 @@ gravacoes/
 /playwright/.cache/
 /playwright/.auth/
 .features-gen/
+Claude outputs/
