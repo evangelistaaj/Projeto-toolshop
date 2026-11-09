@@ -41,7 +41,12 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  // Na Toolshop local, o mesmo computador corre os browsers E a loja (em modo de
+  // desenvolvimento, mais lenta). Com 6 testes em paralelo, o filtro de preço
+  // (um pedido à API por tecla) esgotava o tempo. Por isso: menos paralelismo
+  // e mais tempo por teste. O site público e a CI ficam como estavam.
+  workers: process.env.CI ? 1 : ambienteLocal ? 2 : undefined,
+  timeout: ambienteLocal ? 60_000 : 30_000,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
