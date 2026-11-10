@@ -5,6 +5,13 @@
     "moduleResolution": "bundler",
     "strict": true,
     "skipLibCheck": true,
-    "types": ["node"]
-  }
+    "types": [
+      "node"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "Claude outputs",
+    "gravacoes"
+  ]
 }

@@ -126,5 +126,12 @@ export class HomePage {
         await this.menuOrdenacao.selectOption(valor);
         await listaRecarregada;
     }
+
+    async abrirProduto(nome: string) {
+        const nomeExato = new RegExp(`^\\s*${nome}\\s*$`);
+        await this.nomesProdutos.filter({ hasText: nomeExato }).first().click();
+        await expect(this.page).toHaveURL(/\/product\//);
+    }
+
 }
 
