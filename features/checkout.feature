@@ -52,3 +52,8 @@ Funcionalidade: Checkout
         |  6 Monthly Installments |
         |  9 Monthly Installments |
         | 12 Monthly Installments |
+
+    Cenário: O carrinho fica vazio depois de finalizar a compra
+      Dado que escolho o método de pagamento "Cash on Delivery"
+      Quando confirmo a encomenda
+      Então o meu carrinho fica vazio
