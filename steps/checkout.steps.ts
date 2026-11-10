@@ -73,3 +73,7 @@ Then('vejo a confirmação da encomenda com um número de fatura', async ({ page
     await expect(checkoutPage.confirmacaoEncomenda).toContainText(/INV-\d+/);
 });
 
+Then('o meu carrinho fica vazio', async ({ page }) => {
+    const checkoutPage = new CheckoutPage(page);
+    await expect(checkoutPage.linkCarrinho).toBeHidden();
+});
