@@ -54,7 +54,7 @@ Given('que escolho o método de pagamento {string} em {string}',
     async ({ page }, metodo: string, prestacoes: string) => {
         const checkoutPage = new CheckoutPage(page);
         await checkoutPage.escolherPagamento(metodo, prestacoes);
-});
+    });
 
 
 // ---------- Ação (Quando) ----------

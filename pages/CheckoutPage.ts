@@ -1,5 +1,5 @@
 import { type Page, type Locator, expect } from '@playwright/test';
-import { type Utilizador } from '../utils/dados';
+import { type Utilizador, gerarTransferenciaBancaria, gerarCartaoCredito, gerarCartaoPresente } from '../utils/dados';
 
 export class CheckoutPage {
     // 1. A LISTA dos elementos desta página
@@ -37,6 +37,15 @@ export class CheckoutPage {
     readonly botaoFinalizar: Locator;
     readonly mensagemPagamentoValido: Locator;
     readonly confirmacaoEncomenda: Locator;
+    readonly campoNomeBanco: Locator;
+    readonly campoNomeConta: Locator;
+    readonly campoNumeroConta: Locator;
+    readonly campoNumeroCartao: Locator;
+    readonly campoValidadeCartao: Locator;
+    readonly campoCvv: Locator;
+    readonly campoTitularCartao: Locator;
+    readonly campoNumeroCartaoPresente: Locator;
+    readonly campoCodigoValidacao: Locator;
 
 
     // 2. ONDE encontrar cada elemento
@@ -74,6 +83,15 @@ export class CheckoutPage {
         this.prestacoes = page.getByTestId('monthly_installments');
         this.botaoFinalizar = page.getByTestId('finish');
         this.mensagemPagamentoValido = page.getByTestId('payment-success-message');
+        this.campoNomeBanco = page.getByTestId('bank_name');
+        this.campoNomeConta = page.getByTestId('account_name');
+        this.campoNumeroConta = page.getByTestId('account_number');
+        this.campoNumeroCartao = page.getByTestId('credit_card_number');
+        this.campoValidadeCartao = page.getByTestId('expiration_date');
+        this.campoCvv = page.getByTestId('cvv');
+        this.campoTitularCartao = page.getByTestId('card_holder_name');
+        this.campoNumeroCartaoPresente = page.getByTestId('gift_card_number');
+        this.campoCodigoValidacao = page.getByTestId('validation_code');
 
         // A confirmação final
         this.confirmacaoEncomenda = page.locator('#order-confirmation');
@@ -117,26 +135,33 @@ export class CheckoutPage {
     //   - 300 ms depois de mudares o código postal OU o número da porta, faz uma
     //     pesquisa de morada; se mudares os dois, pode fazer DUAS;
     //   - a resposta reescreve rua, cidade e distrito, e o distrito vem vazio (bug #2);
-    //   - com conta, a morada do registo já vem preenchida, menos o número da porta.
-    // Se avançarmos com o distrito vazio, a encomenda é recusada no fim (422)
-    // e o ecrã não mostra erro nenhum.
+    //   - com conta, a morada do registo já vem preenchida, menos o número da porta;
+    //   - a API só aceita a cidade que a pesquisa devolve para aquele código postal:
+    //     com outra cidade qualquer, recusa a encomenda (422, "city does not belong...").
+    // Se avançarmos com o distrito vazio ou com outra cidade, a encomenda é recusada
+    // no fim (422) e o ecrã não mostra erro nenhum.
     // Por isso, em cada volta do ciclo:
-    //   - preenchemos o que estiver vazio;
-    //   - se preenchemos alguma coisa, damos mais uma volta 1 s depois, para ver se ficou;
+    //   - primeiro o código postal e o número; se mexemos neles, esperamos pela pesquisa
+    //     (próxima volta, 1 s depois) antes de tocar na rua e na cidade;
+    //   - depois preenchemos o que a pesquisa deixou vazio (o distrito, sempre);
     //   - só avançamos quando uma volta encontra tudo completo sem mexer em nada.
     async indicarMorada(utilizador: Utilizador) {
         await this.campoPais.selectOption(utilizador.pais);
 
         await expect(async () => {
-            const preenchidos = [
+            const preenchiCodigo = [
                 await this.preencherSeVazio(this.campoCodigoPostal, utilizador.codigoPostal),
                 await this.preencherSeVazio(this.campoNumeroPorta, utilizador.numeroPorta),
+            ];
+            expect(preenchiCodigo, 'Mudei o código postal ou o número: espero pela pesquisa').not.toContain(true);
+            await expect(this.avisoPesquisaMorada).toBeHidden({ timeout: 1_000 });
+
+            const preenchidos = [
                 await this.preencherSeVazio(this.campoRua, utilizador.rua),
                 await this.preencherSeVazio(this.campoCidade, utilizador.cidade),
                 await this.preencherSeVazio(this.campoDistrito, utilizador.distrito),
             ];
             expect(preenchidos, 'Preenchi campos nesta volta: confirmo na próxima').not.toContain(true);
-            await expect(this.avisoPesquisaMorada).toBeHidden({ timeout: 1_000 });
             await expect(this.botaoAvancarMorada).toBeEnabled({ timeout: 1_000 });
         }).toPass({ intervals: [1_000], timeout: 20_000 });
 
@@ -153,8 +178,39 @@ export class CheckoutPage {
     // Etapa 4: escolhe pelo texto que se vê no ecrã ("Cash on Delivery", ...)
     async escolherPagamento(metodo: string, prestacoes?: string) {
         await this.metodoPagamento.selectOption({ label: metodo });
-        if (prestacoes) {
-            await this.prestacoes.selectOption({ label: prestacoes });
+
+        switch (metodo) {
+            case 'Cash on Delivery':
+                // não pede mais nada
+                break;
+
+            case 'Buy Now Pay Later':
+                await this.prestacoes.selectOption({ label: prestacoes ?? '3 Monthly Installments' });
+                break;
+
+            case 'Bank Transfer':
+                const transferencia = gerarTransferenciaBancaria();
+                await this.campoNomeBanco.fill(transferencia.nomeBanco);
+                await this.campoNomeConta.fill(transferencia.nomeConta);
+                await this.campoNumeroConta.fill(transferencia.numeroConta);
+                break;
+
+            case 'Credit Card':
+                const cartao = gerarCartaoCredito();
+                await this.campoNumeroCartao.fill(cartao.numero);
+                await this.campoValidadeCartao.fill(cartao.validade);
+                await this.campoCvv.fill(cartao.cvv);
+                await this.campoTitularCartao.fill(cartao.titular);
+                break;
+
+            case 'Gift Card':
+                const cartaoPresente = gerarCartaoPresente();
+                await this.campoNumeroCartaoPresente.fill(cartaoPresente.numero);
+                await this.campoCodigoValidacao.fill(cartaoPresente.codigoValidacao);
+                break;
+
+            default:
+                throw new Error(`Método de pagamento desconhecido: "${metodo}"`);
         }
     }
 

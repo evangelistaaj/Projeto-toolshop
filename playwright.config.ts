@@ -57,6 +57,10 @@ export default defineConfig({
     baseURL,
     testIdAttribute: 'data-test',
 
+    // Cada ação (clicar, preencher...) desiste ao fim de 15 s. Sem isto, um seletor errado
+    // ficava à espera até ao fim do tempo do teste (180 s nos cenários @slow).
+    actionTimeout: 15_000,
+
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     //trace: 'on-first-retry',
 
