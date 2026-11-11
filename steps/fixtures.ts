@@ -5,6 +5,7 @@ import { type Utilizador } from '../utils/dados';
 type Contexto = {
     utilizador?: Utilizador;
     faixaPreco?: { min: number; max: number };
+    numeroFatura?: string; // guardado quando a confirmação da encomenda aparece
 };
 
 // Cada cenário recebe uma caixa nova e vazia
@@ -14,4 +15,4 @@ export const test = base.extend<{ contexto: Contexto }>({
     },
 });
 
-export const { Given, When, Then } = createBdd(test);
+export const { Given, When, Then } = createBdd(test);

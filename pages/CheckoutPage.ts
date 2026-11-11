@@ -8,6 +8,7 @@ export class CheckoutPage {
     // Etapa 1: carrinho
     readonly linkCarrinho: Locator;
     readonly botaoAvancarCarrinho: Locator;
+    readonly totalCarrinho: Locator;
 
     // Etapa 2: login ou convidado
     readonly campoEmail: Locator;
@@ -36,6 +37,7 @@ export class CheckoutPage {
     readonly prestacoes: Locator;
     readonly botaoFinalizar: Locator;
     readonly mensagemPagamentoValido: Locator;
+    readonly mensagemErroPagamento: Locator;
     readonly confirmacaoEncomenda: Locator;
     readonly campoNomeBanco: Locator;
     readonly campoNomeConta: Locator;
@@ -55,6 +57,7 @@ export class CheckoutPage {
         // Etapa 1: carrinho
         this.linkCarrinho = page.getByTestId('nav-cart');
         this.botaoAvancarCarrinho = page.getByTestId('proceed-1');
+        this.totalCarrinho = page.getByTestId('cart-total');
 
         // Etapa 2: login ou convidado
         this.campoEmail = page.getByTestId('email');
@@ -83,6 +86,7 @@ export class CheckoutPage {
         this.prestacoes = page.getByTestId('monthly_installments');
         this.botaoFinalizar = page.getByTestId('finish');
         this.mensagemPagamentoValido = page.getByTestId('payment-success-message');
+        this.mensagemErroPagamento = page.getByTestId('payment-error-message');
         this.campoNomeBanco = page.getByTestId('bank_name');
         this.campoNomeConta = page.getByTestId('account_name');
         this.campoNumeroConta = page.getByTestId('account_number');
@@ -99,11 +103,48 @@ export class CheckoutPage {
 
     // 3. AÇÕES que se podem fazer nesta página
 
-    // Etapa 1: o cliente chega ao checkout pelo ícone do carrinho, como na exploração
-    async abrirPeloCarrinho() {
+    // Etapa 1: o cliente abre o carrinho pelo ícone, como na exploração
+    async abrirCarrinho() {
         await this.linkCarrinho.click();
         await expect(this.botaoAvancarCarrinho).toBeVisible();
+    }
+
+    // ... e avança para o checkout
+    async abrirPeloCarrinho() {
+        await this.abrirCarrinho();
         await this.botaoAvancarCarrinho.click();
+    }
+
+    // A linha do carrinho de um produto (nome exato: "Pliers" não apanha "Combination Pliers")
+    linhaProduto(produto: string): Locator {
+        return this.page.getByRole('row').filter({
+            has: this.page.getByTestId('product-title').filter({ hasText: new RegExp(`^\\s*${produto}\\s*$`) }),
+        });
+    }
+
+    precoProduto(produto: string): Locator {
+        return this.linhaProduto(produto).getByTestId('product-price');
+    }
+
+    // O campo da quantidade tem um rótulo acessível com o nome do produto
+    async alterarQuantidade(produto: string, quantidade: number) {
+        const respostaQuantidade = this.page.waitForResponse(
+            (r) => r.url().includes('/product/quantity') && r.request().method() === 'PUT',
+        );
+        const campoQuantidade = this.page.getByLabel(`Quantity for ${produto}`);
+        await campoQuantidade.fill(String(quantidade));
+        await campoQuantidade.blur(); // a Toolshop só atualiza quando o campo perde o foco
+        await respostaQuantidade;
+    }
+
+    async removerProduto(produto: string) {
+        const respostaRemover = this.page.waitForResponse(
+            (r) => r.url().includes('/carts/') && r.request().method() === 'DELETE',
+        );
+        // O botão de remover não tem data-test nem nome acessível (só um ícone "x"):
+        // CSS é a única forma de o encontrar. É também uma falha de acessibilidade.
+        await this.linhaProduto(produto).locator('a.btn-danger').click();
+        await respostaRemover;
     }
 
     // Etapa 2, com conta
@@ -119,15 +160,25 @@ export class CheckoutPage {
         await this.botaoAvancarComConta.click();
     }
 
-    // Etapa 2, como convidado
-    async continuarComoConvidado(utilizador: Utilizador) {
+    // Etapa 2, como convidado: preenche e submete os dados (sem avançar)
+    async preencherConvidado(utilizador: Utilizador) {
         await this.separadorConvidado.click();
         await this.campoEmailConvidado.fill(utilizador.email);
         await this.campoNomeConvidado.fill(utilizador.nome);
         await this.campoApelidoConvidado.fill(utilizador.apelido);
         await this.botaoConfirmarConvidado.click();
+    }
+
+    // ... e avança para a morada
+    async continuarComoConvidado(utilizador: Utilizador) {
+        await this.preencherConvidado(utilizador);
         await expect(this.botaoAvancarConvidado).toBeEnabled();
         await this.botaoAvancarConvidado.click();
+    }
+
+    // Uma mensagem de validação, pelo texto que se vê no ecrã
+    aviso(texto: string): Locator {
+        return this.page.getByText(texto);
     }
 
     // Etapa 3: morada.
@@ -145,7 +196,7 @@ export class CheckoutPage {
     //     (próxima volta, 1 s depois) antes de tocar na rua e na cidade;
     //   - depois preenchemos o que a pesquisa deixou vazio (o distrito, sempre);
     //   - só avançamos quando uma volta encontra tudo completo sem mexer em nada.
-    async indicarMorada(utilizador: Utilizador) {
+    async preencherMorada(utilizador: Utilizador) {
         await this.campoPais.selectOption(utilizador.pais);
 
         await expect(async () => {
@@ -164,7 +215,27 @@ export class CheckoutPage {
             expect(preenchidos, 'Preenchi campos nesta volta: confirmo na próxima').not.toContain(true);
             await expect(this.botaoAvancarMorada).toBeEnabled({ timeout: 1_000 });
         }).toPass({ intervals: [1_000], timeout: 20_000 });
+    }
 
+    // Morada completa e estável: avança para o pagamento
+    async indicarMorada(utilizador: Utilizador) {
+        await this.preencherMorada(utilizador);
+        await this.botaoAvancarMorada.click();
+    }
+
+    // Cenário negativo: a morada fica sem rua (a pesquisa já terminou, nada a volta a preencher)
+    async indicarMoradaSemRua(utilizador: Utilizador) {
+        await this.preencherMorada(utilizador);
+        await this.campoRua.clear();
+        await this.campoRua.blur();
+    }
+
+    // Cenário do bug #4: troca a cidade que a pesquisa devolveu por outra e avança.
+    // O formulário aceita, mas a API vai recusar a fatura no fim (422).
+    async indicarMoradaComOutraCidade(utilizador: Utilizador, cidade: string) {
+        await this.preencherMorada(utilizador);
+        await this.campoCidade.fill(cidade);
+        await expect(this.botaoAvancarMorada).toBeEnabled();
         await this.botaoAvancarMorada.click();
     }
 
@@ -214,6 +285,35 @@ export class CheckoutPage {
         }
     }
 
+    // Cenários negativos: troca um campo do cartão (já preenchido com dados válidos)
+    // por um valor inválido. Nomes como aparecem no Gherkin.
+    async alterarCampoCartao(campo: string, valor: string) {
+        let campoCartao: Locator;
+        switch (campo) {
+            case 'número':
+                campoCartao = this.campoNumeroCartao;
+                break;
+            case 'validade':
+                campoCartao = this.campoValidadeCartao;
+                break;
+            case 'CVV':
+                campoCartao = this.campoCvv;
+                break;
+            default:
+                throw new Error(`Campo do cartão desconhecido: "${campo}"`);
+        }
+        await campoCartao.fill(valor);
+        await campoCartao.blur(); // a mensagem de erro aparece quando o campo perde o foco
+    }
+
+    // O número da fatura que aparece na confirmação ("... INV-2026000119.")
+    async lerNumeroFatura(): Promise<string> {
+        const texto = (await this.confirmacaoEncomenda.textContent()) ?? '';
+        const numero = texto.match(/INV-\d+/)?.[0];
+        if (!numero) throw new Error(`Não encontrei o número da fatura em: "${texto}"`);
+        return numero;
+    }
+
     // O botão "finish" diz sempre "Confirm", mas funciona em DOIS cliques:
     //   1.º clique -> a API valida o pagamento ("Payment was successful")
     //   2.º clique -> cria a encomenda e mostra o número da fatura
@@ -225,4 +325,4 @@ export class CheckoutPage {
         await expect(this.botaoFinalizar).toHaveText('Confirm');
         await this.botaoFinalizar.click();
     }
-}
+}

@@ -78,14 +78,20 @@ Funcionalidade: Checkout
 - Filtro por categoria, validando a lista exata de produtos esperados
 - Paginação de resultados filtrados
 
-**Checkout** (`features/checkout.feature`), organizado por persona com `Regra:`
-- **Cliente com conta:** compra depois de iniciar sessão no checkout
+**Carrinho** (`features/carrinho.feature`)
+- O total acompanha a quantidade (preço × quantidade)
+- Remover o único produto deixa o carrinho vazio
+
+**Checkout** (`features/checkout.feature`), organizado por regras de negócio com `Regra:`
+- **Cliente com conta:** compra depois de iniciar sessão no checkout, e a fatura fica disponível nas suas faturas ("My invoices"), com o mesmo número que viu na confirmação
 - **Convidado:** compra com cada método de pagamento (pagamento na entrega, transferência bancária, cartão de crédito e cartão de presente)
 - **Convidado:** compra a prestações, com todas as opções (3, 6, 9 e 12 meses)
+- **Convidado:** o carrinho fica vazio depois de finalizar a compra
+- **Dados inválidos não deixam avançar:** email do convidado inválido, morada sem rua, e cartão de crédito com número incompleto, validade no passado ou CVV curto
+- **Bug documentado como cenário executável:** a encomenda recusada pela API tem de avisar o cliente (ver [descobertas](#-descobertas-durante-a-automação))
 
 **Próximos passos**
-- Checkout: cenários negativos (dados de pagamento inválidos, morada incompleta)
-- Checkout: regras depois da compra (carrinho vazio, fatura visível na conta do cliente)
+- Projeto à parte de testes de API (a mesma aplicação, sem browser)
 - Ordenação por classificação CO₂
 - Massa de teste em ficheiros JSON
 - Testes de carga com k6, contra a instância local do Toolshop em Docker
@@ -99,15 +105,17 @@ Todos os cenários correm em **3 browsers**: Chromium, Firefox e WebKit.
 - **Cenários declarativos**, com **um comportamento por cenário**
 - **Linguagem de negócio nos cenários**: valores técnicos (como `name,asc`) traduzidos no código através de um dicionário
 - **Contexto (Background)** para passos comuns a todos os cenários de uma funcionalidade
-- **Regras (`Regra:`) por persona**: no checkout, cada persona (cliente com conta e convidado) tem o seu bloco, com o seu próprio Contexto e a sua tag
+- **Regras (`Regra:`) por regra de negócio**: no checkout, cada persona (cliente com conta e convidado), os dados inválidos e o bug conhecido têm o seu bloco, com o seu próprio Contexto e a sua tag
 - **Esquema do Cenário** e **tabelas de dados (Data Tables)** para testes orientados a dados, com colunas que servem só para dar um título legível a cada exemplo
 - **Técnicas de desenho de testes**: partição de equivalência, análise de valores limite e seleção de casos baseada em risco. Por exemplo, os métodos de pagamento são testados numa só persona, porque a validação do pagamento é igual para as duas; o que muda entre personas (o caminho da fatura) tem um cenário em cada uma
-- **Oráculos fortes**: verificação da lista exata de produtos esperados, em vez de heurísticas frágeis
+- **Oráculos fortes**: verificação da lista exata de produtos esperados, em vez de heurísticas frágeis; e, depois da compra, verificação das consequências (a fatura com aquele número aparece na conta do cliente), e não só da mensagem de sucesso
+- **Cenários negativos com uma só variável**: o cartão é preenchido com dados válidos e depois só **um** campo fica inválido, para se saber exatamente o que causou a recusa
+- **Bugs conhecidos como cenários executáveis**: o cenário descreve o comportamento correto e fica marcado com `@fail`; enquanto o bug existir, conta como esperado, e quando for corrigido o Playwright avisa
 
 **Automação**
 - **Steps reutilizáveis e organizados por assunto** (navegação, conta, filtros, checkout…), partilhados por todas as funcionalidades
 - **Page Object Model (POM)**: cada página do site tem a sua classe com elementos e ações; o checkout é um único Page Object organizado pelas 4 etapas do assistente
-- **Localizadores estáveis**: `getByTestId()` com o atributo `data-test`, e localizadores acessíveis (`getByRole`, `getByLabel`) quando os test ids contêm identificadores internos
+- **Localizadores estáveis**: `getByTestId()` com o atributo `data-test`, e localizadores acessíveis (`getByRole`, `getByLabel`) quando não há test id ou quando contém identificadores internos (por exemplo, a linha da fatura pelo número, ou a quantidade pelo rótulo "Quantity for <produto>"); CSS só como exceção comentada
 - **Interação acessível com componentes complexos**: o slider de preço é controlado por teclado (Home/End, Page Up/Down, setas), sem depender de posições em píxeis
 - **`baseURL` configurado**: o endereço do site está definido num único sítio, e o mesmo código corre no site público ou na instância local
 - **Verificação de tipos**: `npx tsc --noEmit` confirma o projeto inteiro antes de correr os testes
@@ -116,7 +124,7 @@ Todos os cenários correm em **3 browsers**: Chromium, Firefox e WebKit.
 - **Isolamento de dados de teste**: cada cenário cria os seus próprios dados com fábricas (`utils/dados.ts`) baseadas no Faker, sem depender de contas partilhadas
 - **Dados de pagamento válidos por construção**: os geradores de transferência bancária, cartão de crédito e cartão de presente seguem as regras de validação da aplicação (formatos, tamanhos, validade sempre no futuro, nomes sem acentos)
 - **Preparação de dados pela API**: antes de cada compra, o stock do produto é reposto através da API (só na instância local; no site público, partilhado, apenas se confirma que há stock)
-- **Fixtures para partilhar estado entre steps**: cada cenário recebe o seu próprio contexto isolado, seguro em execução paralela
+- **Fixtures para partilhar estado entre steps**: cada cenário recebe o seu próprio contexto isolado, seguro em execução paralela (por exemplo, o número da fatura visto na confirmação é guardado e usado mais tarde, na página das faturas)
 - **Sincronização sem esperas fixas**: cada ação que recarrega dados espera pela resposta da API antes de o teste continuar
 - **Esperar pelo resultado, não por um acontecimento**: na morada do checkout, o teste repete a verificação até o formulário ficar completo e estável, em vez de esperar por um pedido à API que pode não acontecer
 - **Falhar depressa e com mensagens claras**: cada ação desiste ao fim de 15 s, e as asserções explicam o que falhou (por exemplo, "o produto tem stock?")
@@ -128,6 +136,8 @@ Todos os cenários correm em **3 browsers**: Chromium, Firefox e WebKit.
   - `@so-local`: só corre na instância local (provoca falhas de login e bloqueios de conta)
   - `@slow`: dá o triplo do tempo a fluxos longos, como o checkout
   - `@com-conta` e `@convidado`: permitem correr só uma persona do checkout
+  - `@negativo`: cenários de dados inválidos
+  - `@bug` e `@fail`: bug conhecido, documentado como cenário que deve falhar enquanto o bug existir
   - `@wip`: trabalho em curso, nunca corre
 - **Evidências automáticas em caso de falha**: screenshot, vídeo e trace
 - **Integração Contínua (CI)**: os cenários correm automaticamente no GitHub Actions a cada push
@@ -141,9 +151,13 @@ Algumas observações sobre o comportamento da aplicação, encontradas ao inves
 - **Resultados de filtro desatualizados** ([bug #1](https://github.com/evangelistaaj/Projeto-toolshop/issues/1)): quando o filtro de preço muda várias vezes seguidas (por exemplo, com o teclado), as respostas da API podem chegar fora de ordem e a lista mostra produtos que não correspondem ao filtro visível. Os testes contornam isto esperando por cada resposta antes da ação seguinte.
 - **Procura de morada duplicada** ([bug #2](https://github.com/evangelistaaj/Projeto-toolshop/issues/2)): o formulário de registo faz a procura do código postal duas vezes, e uma resposta atrasada pode apagar o distrito já preenchido pelo utilizador. O checkout tem o mesmo comportamento: a procura dispara 300 ms depois de mudar o código postal ou o número da porta, e uma vez por cada um desses campos.
 - **Distrito sem validação** ([questão #3](https://github.com/evangelistaaj/Projeto-toolshop/issues/3)): a procura do código postal preenche a rua e a cidade, mas não o distrito. Num teste manual, o servidor aceitou um distrito incoerente com a cidade (por exemplo, *Amora* com o distrito *Porto*). Fica a questão sobre se esta validação é esperada.
-- **Encomenda recusada sem aviso ao cliente** (a registar como issue): no último passo do checkout, a API recusa a fatura (erro 422) e o ecrã fica parado no botão "Confirm", sem nenhuma mensagem. Acontece em dois casos:
+- **Encomenda recusada sem aviso ao cliente** (a registar como issue): no último passo do checkout, a API recusa a fatura (erro 422) e o ecrã fica parado no botão "Confirm", sem nenhuma mensagem. O cliente pensa que comprou, mas a encomenda nunca foi criada. No código da aplicação, o erro da criação da fatura é ignorado (`error: () => { }`). Acontece em dois casos:
   - quando o distrito foi apagado pela procura de morada (ver bug #2);
   - quando a cidade não é a que a procura devolve para aquele código postal. Aqui, a mensagem da API ainda engana: diz que o país não corresponde à morada, quando o problema é a cidade, e o campo cidade aceita qualquer texto.
+
+  Está coberto por um cenário `@bug @fail` no checkout.
+- **Botão de remover sem nome acessível**: no carrinho, o botão que remove um produto é só um ícone "x", sem texto, rótulo nem `data-test`. Um leitor de ecrã não o anuncia, e o teste tem de o encontrar por CSS.
+- **Formato inconsistente do número da fatura**: as faturas novas têm um algarismo a menos do que as que já existiam (`INV-2026000120` e `INV-20260000034`). Se a lista alguma vez for ordenada como texto, fica fora de ordem.
 - **Confirmação em dois cliques**: no checkout, o botão "Confirm" valida primeiro o pagamento e só no segundo clique cria a encomenda. Parecia uma submissão duplicada, mas o código da aplicação mostra que é intencional.
 - **Stock que se esgota**: cada execução do checkout compra uma unidade, e com execuções repetidas o produto esgota (o botão "Add to cart" fica desligado). A solução foi repor o stock pela API antes de cada compra; o campo `stock` é aceite pela API, apesar de não aparecer na documentação (Swagger).
 - **Bloqueio de contas partilhadas**: as contas de demonstração ficam bloqueadas após várias tentativas de login falhadas, o que motivou a criação de utilizadores próprios em cada cenário.
@@ -155,6 +169,7 @@ Algumas observações sobre o comportamento da aplicação, encontradas ao inves
 ```
 ├── .github/workflows/      # Pipeline de CI (GitHub Actions)
 ├── features/               # Cenários funcionais em Gherkin
+│   ├── carrinho.feature
 │   ├── checkout.feature
 │   ├── filtros.feature
 │   ├── login.feature
@@ -164,6 +179,7 @@ Algumas observações sobre o comportamento da aplicação, encontradas ao inves
 │   ├── fixtures.ts         # Contexto partilhado entre steps de um cenário
 │   ├── navegacao.steps.ts  # Passos de navegação comuns
 │   ├── conta.steps.ts      # Registar e usar uma conta
+│   ├── carrinho.steps.ts
 │   ├── checkout.steps.ts
 │   ├── filtros.steps.ts
 │   ├── login.steps.ts
@@ -172,8 +188,9 @@ Algumas observações sobre o comportamento da aplicação, encontradas ao inves
 │   └── stock.steps.ts      # Pré-condição de stock (preparação pela API)
 ├── pages/                  # Page Objects
 │   ├── AccountPage.ts
-│   ├── CheckoutPage.ts     # As 4 etapas do checkout
+│   ├── CheckoutPage.ts     # As 4 etapas do checkout (a 1.ª é o carrinho)
 │   ├── HomePage.ts
+│   ├── InvoicesPage.ts     # As faturas do cliente ("My invoices")
 │   ├── LoginPage.ts
 │   ├── ProductPage.ts
 │   └── RegisterPage.ts

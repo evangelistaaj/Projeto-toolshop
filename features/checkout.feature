@@ -22,6 +22,12 @@ Funcionalidade: Checkout
       Quando confirmo a encomenda
       Então vejo a confirmação da encomenda com um número de fatura
 
+    Cenário: A fatura fica disponível nas faturas do cliente
+      Dado que escolho o método de pagamento "Cash on Delivery"
+      Quando confirmo a encomenda
+      Então vejo a confirmação da encomenda com um número de fatura
+      E encontro essa fatura nas minhas faturas
+
   @convidado
   Regra: O cliente sem conta compra como convidado
 
@@ -57,3 +63,43 @@ Funcionalidade: Checkout
       Dado que escolho o método de pagamento "Cash on Delivery"
       Quando confirmo a encomenda
       Então o meu carrinho fica vazio
+
+  @convidado @negativo
+  Regra: O checkout não avança com dados inválidos
+
+    Cenário: Convidado com email inválido
+      Quando tento continuar como convidado com o email "email-invalido"
+      Então vejo o aviso "Email format is invalid"
+
+    Cenário: Morada de entrega sem rua
+      Dado que continuo como convidado no checkout
+      Quando indico uma morada de entrega sem rua
+      Então não consigo avançar para o pagamento
+
+    Esquema do Cenário: Cartão de crédito com <descricao>
+      Dado que continuo como convidado no checkout
+      E que indico uma morada de entrega válida
+      Quando pago com cartão de crédito com <campo> "<valor>"
+      Então vejo o aviso "<aviso>"
+      E não consigo confirmar a encomenda
+
+      Exemplos:
+        | campo    | valor     | descricao                  | aviso                                  |
+        | número   | 1234-5678 | número incompleto          | Invalid card number format.            |
+        | validade | 01/2020   | validade no passado        | Expiration date must be in the future. |
+        | CVV      | 12        | CVV com só dois algarismos | CVV must be 3 or 4 digits.             |
+
+  @convidado
+  Regra: O cliente é avisado quando a encomenda não é criada
+
+    # Bug: a API recusa a fatura (422) e o ecrã não mostra nada; o cliente pensa que comprou.
+    # A Toolshop ignora o erro (no código: "error: () => { }"). Issue #4 (a criar).
+    # @fail: o cenário "passa" enquanto o bug existir. Quando o bug for corrigido,
+    # o Playwright avisa (o cenário deixa de falhar) e é altura de tirar o @fail.
+    @bug @fail
+    Cenário: Encomenda recusada por uma cidade que não corresponde ao código postal
+      Dado que continuo como convidado no checkout
+      E que indico uma morada de entrega com uma cidade que não corresponde ao código postal
+      E que escolho o método de pagamento "Cash on Delivery"
+      Quando confirmo a encomenda
+      Então sou avisado de que a encomenda não foi criada
