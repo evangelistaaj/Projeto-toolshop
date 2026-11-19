@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import {  When, Then } from './fixtures';
+import { When, Then } from './fixtures';
 import { RegisterPage } from '../pages/RegisterPage';
 import { LoginPage } from '../pages/LoginPage';
 import { gerarUtilizador } from '../utils/dados';

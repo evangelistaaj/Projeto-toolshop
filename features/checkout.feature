@@ -86,17 +86,17 @@ Funcionalidade: Checkout
       Exemplos:
         | campo    | valor     | descricao                  | aviso                                  |
         | número   | 1234-5678 | número incompleto          | Invalid card number format.            |
-        | validade | 01/2020   | validade no passado        | Expiration date must be in the future. |
-        | CVV      | 12        | CVV com só dois algarismos | CVV must be 3 or 4 digits.             |
+        | validade |   01/2020 | validade no passado        | Expiration date must be in the future. |
+        | CVV      |        12 | CVV com só dois algarismos | CVV must be 3 or 4 digits.             |
 
   @convidado
   Regra: O cliente é avisado quando a encomenda não é criada
-
     # Bug: a API recusa a fatura (422) e o ecrã não mostra nada; o cliente pensa que comprou.
     # A Toolshop ignora o erro (no código: "error: () => { }").
     # https://github.com/evangelistaaj/Projeto-toolshop/issues/4
     # @fail: o cenário "passa" enquanto o bug existir. Quando o bug for corrigido,
     # o Playwright avisa (o cenário deixa de falhar) e é altura de tirar o @fail.
+
     @bug @fail
     Cenário: Encomenda recusada por uma cidade que não corresponde ao código postal
       Dado que continuo como convidado no checkout

@@ -12,7 +12,7 @@ When('filtro por {string}', async ({ page }, categoria: string) => {
 
 When('filtro pela categoria {string}', async ({ page }, categoria: string) => {
     const homePage = new HomePage(page);
-    await homePage.filtrarPorCategoria(categoria); 
+    await homePage.filtrarPorCategoria(categoria);
 });
 
 

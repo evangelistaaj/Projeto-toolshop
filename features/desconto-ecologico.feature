@@ -15,8 +15,8 @@ Funcionalidade: Desconto ecológico no carrinho
     Cenário: Com a maioria das unidades ecológicas o carrinho mostra o desconto
       Dado que tenho no carrinho os produtos:
         | produto       | quantidade | preço | CO2 |
-        | Bamboo Hammer | 2          | 10.00 | A   |
-        | Steel Saw     | 1          | 5.00  | D   |
+        | Bamboo Hammer |          2 | 10.00 | A   |
+        | Steel Saw     |          1 |  5.00 | D   |
       Quando abro o meu carrinho
       Então o carrinho mostra o desconto ecológico de "$1.25"
       E o subtotal do carrinho é "$25.00"
@@ -25,8 +25,8 @@ Funcionalidade: Desconto ecológico no carrinho
     Cenário: Com exatamente metade das unidades ecológicas não há desconto
       Dado que tenho no carrinho os produtos:
         | produto       | quantidade | preço | CO2 |
-        | Bamboo Hammer | 1          | 10.00 | A   |
-        | Steel Saw     | 1          | 10.00 | D   |
+        | Bamboo Hammer |          1 | 10.00 | A   |
+        | Steel Saw     |          1 | 10.00 | D   |
       Quando abro o meu carrinho
       Então o carrinho não mostra desconto ecológico
       E o total do carrinho é "$20.00"
@@ -34,8 +34,8 @@ Funcionalidade: Desconto ecológico no carrinho
     Cenário: O desconto aparece quando a maioria das unidades passa a ser ecológica
       Dado que tenho no carrinho os produtos:
         | produto       | quantidade | preço | CO2 |
-        | Bamboo Hammer | 1          | 10.00 | A   |
-        | Steel Saw     | 1          | 10.00 | D   |
+        | Bamboo Hammer |          1 | 10.00 | A   |
+        | Steel Saw     |          1 | 10.00 | D   |
       E que abro o meu carrinho
       Quando altero a quantidade de "Bamboo Hammer" para 2
       Então o carrinho mostra o desconto ecológico de "$1.50"
@@ -56,18 +56,18 @@ Funcionalidade: Desconto ecológico no carrinho
       Quando confirmo a encomenda
       Então vejo a confirmação da encomenda com um número de fatura
       E a fatura nas minhas faturas tem o total que o carrinho mostrava
-
       # Controlo: aqui o desconto não cai a meio cêntimo, e o carrinho e a fatura batem certo
+
       Exemplos:
         | quantidade | preco | subtotal |
-        | 3          | 9.99  | 29.97    |
-
+        |          3 |  9.99 |    29.97 |
       # Bug #5: com 10.10, o carrinho mostra $9.59 e a fatura cobra $9.60. O carrinho só
       # arredonda no ecrã; a API arredonda o desconto e o total, cada um à sua conta.
       # https://github.com/evangelistaaj/Projeto-toolshop/issues/5
       # @fail: o exemplo "passa" enquanto o bug existir. Quando o bug for corrigido,
       # o Playwright avisa (o exemplo deixa de falhar) e é altura de tirar o @fail.
+
       @bug @fail
       Exemplos:
         | quantidade | preco | subtotal |
-        | 1          | 10.10 | 10.10    |
+        |          1 | 10.10 |    10.10 |

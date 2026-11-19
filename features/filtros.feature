@@ -13,7 +13,6 @@ Funcionalidade: Filtros de produtos
       | Bolt Cutters       |
       | Long Nose Pliers   |
       | Slip Joint Pliers  |
-
   # A categoria Other tem 15 produtos: 9 na página 1 e 6 na página 2.
   # A ordem por omissão do site não é garantida (já mudou uma vez),
   # por isso ordenamos por nome antes de verificar cada página.
