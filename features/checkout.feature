@@ -93,7 +93,8 @@ Funcionalidade: Checkout
   Regra: O cliente é avisado quando a encomenda não é criada
 
     # Bug: a API recusa a fatura (422) e o ecrã não mostra nada; o cliente pensa que comprou.
-    # A Toolshop ignora o erro (no código: "error: () => { }"). Issue #4 (a criar).
+    # A Toolshop ignora o erro (no código: "error: () => { }").
+    # https://github.com/evangelistaaj/Projeto-toolshop/issues/4
     # @fail: o cenário "passa" enquanto o bug existir. Quando o bug for corrigido,
     # o Playwright avisa (o cenário deixa de falhar) e é altura de tirar o @fail.
     @bug @fail

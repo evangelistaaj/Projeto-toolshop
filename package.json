@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "bddgen && playwright test",
-    "test:ui": "bddgen && playwright test --ui"
+    "test:ui": "bddgen && playwright test --ui",
+    "relatorio": "playwright show-report"
   },
   "keywords": [],
   "author": "",

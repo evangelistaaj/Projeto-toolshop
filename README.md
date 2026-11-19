@@ -82,6 +82,12 @@ Funcionalidade: Checkout
 - O total acompanha a quantidade (preço × quantidade)
 - Remover o único produto deixa o carrinho vazio
 
+**Desconto ecológico** (`features/desconto-ecologico.feature`), com produtos criados pela API para cada cenário (preço e classificação CO₂ à medida) e apagados no fim
+- Com mais de metade das unidades ecológicas (CO₂ A ou B), o carrinho mostra 5% de desconto, o subtotal e o total certos
+- Com exatamente metade, não há desconto
+- O desconto aparece quando, ao mudar a quantidade, a maioria das unidades passa a ser ecológica
+- O cliente paga o total que viu no carrinho: compra completa, comparando o carrinho com a fatura em "My invoices" (com um exemplo de controlo e o [bug #5](https://github.com/evangelistaaj/Projeto-toolshop/issues/5) como cenário executável)
+
 **Checkout** (`features/checkout.feature`), organizado por regras de negócio com `Regra:`
 - **Cliente com conta:** compra depois de iniciar sessão no checkout, e a fatura fica disponível nas suas faturas ("My invoices"), com o mesmo número que viu na confirmação
 - **Convidado:** compra com cada método de pagamento (pagamento na entrega, transferência bancária, cartão de crédito e cartão de presente)
@@ -91,7 +97,8 @@ Funcionalidade: Checkout
 - **Bug documentado como cenário executável:** a encomenda recusada pela API tem de avisar o cliente (ver [descobertas](#-descobertas-durante-a-automação))
 
 **Próximos passos**
-- Projeto à parte de testes de API (a mesma aplicação, sem browser)
+- ~~Projeto à parte de testes de API~~ feito: [Projeto-toolshop-api](https://github.com/evangelistaaj/Projeto-toolshop-api)
+- Cenário próprio para o selo "ECO" na página do produto
 - Ordenação por classificação CO₂
 - Massa de teste em ficheiros JSON
 - Testes de carga com k6, contra a instância local do Toolshop em Docker
@@ -133,7 +140,7 @@ Todos os cenários correm em **3 browsers**: Chromium, Firefox e WebKit.
 **Execução e evidências**
 - **Tags para controlar a execução**:
   - `@sem-ci`: só corre localmente (cria contas ou encomendas)
-  - `@so-local`: só corre na instância local (provoca falhas de login e bloqueios de conta)
+  - `@so-local`: só corre na instância local (provoca falhas de login e bloqueios de conta, ou cria produtos no catálogo)
   - `@slow`: dá o triplo do tempo a fluxos longos, como o checkout
   - `@com-conta` e `@convidado`: permitem correr só uma persona do checkout
   - `@negativo`: cenários de dados inválidos
@@ -151,11 +158,13 @@ Algumas observações sobre o comportamento da aplicação, encontradas ao inves
 - **Resultados de filtro desatualizados** ([bug #1](https://github.com/evangelistaaj/Projeto-toolshop/issues/1)): quando o filtro de preço muda várias vezes seguidas (por exemplo, com o teclado), as respostas da API podem chegar fora de ordem e a lista mostra produtos que não correspondem ao filtro visível. Os testes contornam isto esperando por cada resposta antes da ação seguinte.
 - **Procura de morada duplicada** ([bug #2](https://github.com/evangelistaaj/Projeto-toolshop/issues/2)): o formulário de registo faz a procura do código postal duas vezes, e uma resposta atrasada pode apagar o distrito já preenchido pelo utilizador. O checkout tem o mesmo comportamento: a procura dispara 300 ms depois de mudar o código postal ou o número da porta, e uma vez por cada um desses campos.
 - **Distrito sem validação** ([questão #3](https://github.com/evangelistaaj/Projeto-toolshop/issues/3)): a procura do código postal preenche a rua e a cidade, mas não o distrito. Num teste manual, o servidor aceitou um distrito incoerente com a cidade (por exemplo, *Amora* com o distrito *Porto*). Fica a questão sobre se esta validação é esperada.
-- **Encomenda recusada sem aviso ao cliente** (a registar como issue): no último passo do checkout, a API recusa a fatura (erro 422) e o ecrã fica parado no botão "Confirm", sem nenhuma mensagem. O cliente pensa que comprou, mas a encomenda nunca foi criada. No código da aplicação, o erro da criação da fatura é ignorado (`error: () => { }`). Acontece em dois casos:
+- **Encomenda recusada sem aviso ao cliente** ([bug #4](https://github.com/evangelistaaj/Projeto-toolshop/issues/4)): no último passo do checkout, a API recusa a fatura (erro 422) e o ecrã fica parado no botão "Confirm", sem nenhuma mensagem. O cliente pensa que comprou, mas a encomenda nunca foi criada. No código da aplicação, o erro da criação da fatura é ignorado (`error: () => { }`). Acontece em dois casos:
   - quando o distrito foi apagado pela procura de morada (ver bug #2);
   - quando a cidade não é a que a procura devolve para aquele código postal. Aqui, a mensagem da API ainda engana: diz que o país não corresponde à morada, quando o problema é a cidade, e o campo cidade aceita qualquer texto.
 
   Está coberto por um cenário `@bug @fail` no checkout.
+- **O carrinho promete um total e a fatura cobra outro** ([bug #5](https://github.com/evangelistaaj/Projeto-toolshop/issues/5)): com desconto ecológico e um produto de $10.10, o carrinho mostra $9.59 e a fatura cobra $9.60. O carrinho só arredonda no ecrã; a API arredonda o desconto e o total, cada um à sua conta. Com $29.97 os dois batem certo ($28.47), por isso a diferença só aparece quando o desconto de 5% cai a meio cêntimo. O lado da API está registado no [projeto de testes da API (#13)](https://github.com/evangelistaaj/Projeto-toolshop-api/issues/13). Coberto por um exemplo `@bug @fail`.
+- **Selo "ECO" no título do produto**: nos produtos com classificação CO₂ A ou B, o título da página do produto inclui o selo "ECO". Um teste que compare o nome exato falha; o teste procura o nome (único) dentro do título.
 - **Botão de remover sem nome acessível**: no carrinho, o botão que remove um produto é só um ícone "x", sem texto, rótulo nem `data-test`. Um leitor de ecrã não o anuncia, e o teste tem de o encontrar por CSS.
 - **Formato inconsistente do número da fatura**: as faturas novas têm um algarismo a menos do que as que já existiam (`INV-2026000120` e `INV-20260000034`). Se a lista alguma vez for ordenada como texto, fica fora de ordem.
 - **Confirmação em dois cliques**: no checkout, o botão "Confirm" valida primeiro o pagamento e só no segundo clique cria a encomenda. Parecia uma submissão duplicada, mas o código da aplicação mostra que é intencional.
@@ -171,6 +180,7 @@ Algumas observações sobre o comportamento da aplicação, encontradas ao inves
 ├── features/               # Cenários funcionais em Gherkin
 │   ├── carrinho.feature
 │   ├── checkout.feature
+│   ├── desconto-ecologico.feature
 │   ├── filtros.feature
 │   ├── login.feature
 │   ├── pesquisa.feature
@@ -181,6 +191,7 @@ Algumas observações sobre o comportamento da aplicação, encontradas ao inves
 │   ├── conta.steps.ts      # Registar e usar uma conta
 │   ├── carrinho.steps.ts
 │   ├── checkout.steps.ts
+│   ├── desconto-ecologico.steps.ts
 │   ├── filtros.steps.ts
 │   ├── login.steps.ts
 │   ├── pesquisa.steps.ts
@@ -196,6 +207,7 @@ Algumas observações sobre o comportamento da aplicação, encontradas ao inves
 │   └── RegisterPage.ts
 ├── utils/
 │   ├── dados.ts            # Fábricas de dados de teste (Faker): utilizador e pagamentos
+│   ├── produtos.ts         # Produtos de teste criados e apagados pela API (só na Toolshop local)
 │   └── stock.ts            # Reposição de stock pela API
 ├── CLAUDE.md               # Convenções do projeto (para o assistente Claude)
 ├── playwright.config.ts    # Configuração do Playwright e do playwright-bdd
@@ -216,8 +228,8 @@ npx playwright install
 # 3. Gerar os testes a partir dos cenários e correr tudo
 npm test
 
-# 4. Abrir o relatório
-npx playwright show-report
+# 4. Abrir o relatório (não abre sozinho no fim dos testes)
+npm run relatorio
 ```
 
 Outros comandos úteis:

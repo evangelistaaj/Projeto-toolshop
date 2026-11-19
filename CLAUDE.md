@@ -17,7 +17,7 @@ npm test                                   # bddgen + todos os testes (3 browser
 npm run test:ui                            # modo visual
 npm test -- login --project=chromium       # só um ficheiro, só um browser
 npm test -- --grep "preço"                 # só cenários com "preço" no nome
-npx playwright show-report                 # relatório HTML
+npm run relatorio                          # relatório HTML (não abre sozinho)
 ```
 
 - Ambiente: Windows, PowerShell e VS Code. Nos comandos, usa `curl.exe` (e não `curl`).
@@ -42,7 +42,8 @@ npx playwright show-report                 # relatório HTML
 ## Tags
 
 - `@sem-ci`: cria contas. Fica fora da CI.
-- `@so-local`: provoca falhas de login ou bloqueios de conta. Só corre com o `BASE_URL` em `localhost`.
+- `@so-local`: provoca falhas de login ou bloqueios de conta, ou cria produtos no catálogo.
+  Só corre com o `BASE_URL` em `localhost`.
 - `@wip`: nunca corre.
 - A exclusão é feita no `defineBddConfig` (`playwright.config.ts`). A CI (GitHub Actions)
   corre contra o site público.
@@ -50,15 +51,20 @@ npx playwright show-report                 # relatório HTML
 ## Estrutura e convenções (segue-as; não introduzas outra estrutura)
 
 ```
-features/   login, registo, pesquisa, filtros (.feature; os filtros incluem a ordenação)
+features/   login, registo, pesquisa, filtros (inclui a ordenação), carrinho, checkout,
+            desconto-ecologico
 steps/      fixtures.ts, navegacao.steps.ts, conta.steps.ts, login.steps.ts,
-            registo.steps.ts, pesquisa.steps.ts, filtros.steps.ts
-pages/      HomePage.ts, LoginPage.ts, RegisterPage.ts, AccountPage.ts
-utils/      dados.ts (gerarUtilizador() com faker pt_PT)
+            registo.steps.ts, pesquisa.steps.ts, filtros.steps.ts, carrinho.steps.ts,
+            checkout.steps.ts, stock.steps.ts, desconto-ecologico.steps.ts
+pages/      HomePage, LoginPage, RegisterPage, AccountPage, ProductPage, CheckoutPage,
+            InvoicesPage
+utils/      dados.ts (gerarUtilizador() com faker pt_PT), stock.ts (repõe o stock pela API),
+            produtos.ts (cria e apaga produtos de teste pela API, só na Toolshop local)
 ```
 
-- **Estado entre passos:** fixture `contexto` em `steps/fixtures.ts` (`utilizador`, `faixaPreco`).
-  Acrescenta campos aí; nunca uses variáveis globais.
+- **Estado entre passos:** fixture `contexto` em `steps/fixtures.ts` (`utilizador`, `faixaPreco`,
+  `numeroFatura`, `produtos`, `totalCarrinho`). Acrescenta campos aí; nunca uses variáveis globais.
+  No fim de cada cenário, a fixture apaga os produtos que o cenário criou.
 - **Page Objects:** criados dentro de cada passo (`new LoginPage(page)`). Locators `readonly`
   no construtor e métodos em português (`abrir`, `fazerLogin`, `registar`, `pesquisar`,
   `filtrarPorCategoria`, `filtrarPorPreco`, `irParaPagina`, `ordenarPor`).

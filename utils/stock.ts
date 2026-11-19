@@ -7,8 +7,8 @@ import { type APIRequestContext, expect } from '@playwright/test';
 
 // O mesmo critério do playwright.config.ts para saber se estamos na Toolshop local
 const baseURL = process.env.BASE_URL ?? 'https://practicesoftwaretesting.com';
-const ambienteLocal = /\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(baseURL);
-const apiURL = process.env.API_URL
+export const ambienteLocal = /\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(baseURL);
+export const apiURL = process.env.API_URL
     ?? (ambienteLocal ? 'http://localhost:8091' : 'https://api.practicesoftwaretesting.com');
 
 // Administrador de demonstração da Toolshop (vem nos dados iniciais da aplicação)
@@ -73,7 +73,7 @@ async function procurarProduto(request: APIRequestContext, nomeProduto: string):
     return detalhe.json();
 }
 
-async function entrarComoAdmin(request: APIRequestContext): Promise<string> {
+export async function entrarComoAdmin(request: APIRequestContext): Promise<string> {
     const resposta = await request.post(`${apiURL}/users/login`, { data: admin });
     expect(resposta.ok(), `O login do administrador falhou (${resposta.status()})`).toBe(true);
     return (await resposta.json()).access_token;

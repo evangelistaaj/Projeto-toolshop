@@ -31,4 +31,10 @@ export class InvoicesPage {
     linhaFatura(numero: string): Locator {
         return this.page.getByRole('row').filter({ hasText: numero });
     }
+
+    // O total é a 4.ª coluna (número, morada, data, total), segundo o código-fonte
+    // da Toolshop: as células não têm data-test
+    totalFatura(numero: string): Locator {
+        return this.linhaFatura(numero).getByRole('cell').nth(3);
+    }
 }

@@ -40,6 +40,24 @@ export class ProductPage {
     }
 
     // 3. AÇÕES que se podem fazer nesta página
+
+    // Abre um produto pelo id (ex.: um produto criado pelo cenário, que não está na 1.ª página)
+    async abrir(id: string) {
+        await this.page.goto(`/product/${id}`);
+        await expect(this.nomeProduto).toBeVisible();
+    }
+
+    // Escolhe a quantidade e adiciona ao carrinho. Espera que a API guarde o produto
+    // (POST /carts/<id>): o contador do carrinho já está visível a partir do 2.º produto,
+    // por isso não serve de sinal.
+    async adicionarAoCarrinhoComQuantidade(quantidade: number) {
+        await this.botaoQuantidadeProduto.fill(String(quantidade));
+        const respostaCarrinho = this.page.waitForResponse(
+            (r) => /\/carts\/[^/]+$/.test(new URL(r.url()).pathname) && r.request().method() === 'POST',
+        );
+        await this.adicionarAoCarrinho();
+        expect((await respostaCarrinho).ok(), 'A API não guardou o produto no carrinho').toBe(true);
+    }
     async adicionarAoCarrinho() {
         // Sem stock, o botão fica desligado e o clique esperava até ao fim do tempo do teste.
         // Assim falha em 5 s, com uma mensagem que diz logo o que se passa.

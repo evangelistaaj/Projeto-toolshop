@@ -9,6 +9,9 @@ export class CheckoutPage {
     readonly linkCarrinho: Locator;
     readonly botaoAvancarCarrinho: Locator;
     readonly totalCarrinho: Locator;
+    readonly subtotalCarrinho: Locator;
+    readonly descontoEcologico: Locator;
+    readonly rotuloDescontoEcologico: Locator;
 
     // Etapa 2: login ou convidado
     readonly campoEmail: Locator;
@@ -58,6 +61,10 @@ export class CheckoutPage {
         this.linkCarrinho = page.getByTestId('nav-cart');
         this.botaoAvancarCarrinho = page.getByTestId('proceed-1');
         this.totalCarrinho = page.getByTestId('cart-total');
+        // O subtotal e o desconto ecológico só aparecem quando há desconto
+        this.subtotalCarrinho = page.getByTestId('cart-subtotal');
+        this.descontoEcologico = page.getByTestId('cart-eco-discount');
+        this.rotuloDescontoEcologico = page.getByText('Eco-Friendly Discount (5%)');
 
         // Etapa 2: login ou convidado
         this.campoEmail = page.getByTestId('email');
