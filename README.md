@@ -86,6 +86,7 @@ Funcionalidade: Checkout
 - Com mais de metade das unidades ecológicas (CO₂ A ou B), o carrinho mostra 5% de desconto, o subtotal e o total certos
 - Com exatamente metade, não há desconto
 - O desconto aparece quando, ao mudar a quantidade, a maioria das unidades passa a ser ecológica
+- A página do produto mostra o selo "ECO" nos produtos com classificação A ou B, e não o mostra com C nem com E (os limites da regra)
 - O cliente paga o total que viu no carrinho: compra completa, comparando o carrinho com a fatura em "My invoices" (com um exemplo de controlo e o [bug #5](https://github.com/evangelistaaj/Projeto-toolshop/issues/5) como cenário executável)
 
 **Checkout** (`features/checkout.feature`), organizado por regras de negócio com `Regra:`
@@ -98,7 +99,6 @@ Funcionalidade: Checkout
 
 **Próximos passos**
 - ~~Projeto à parte de testes de API~~ feito: [Projeto-toolshop-api](https://github.com/evangelistaaj/Projeto-toolshop-api)
-- Cenário próprio para o selo "ECO" na página do produto
 - Ordenação por classificação CO₂
 - Massa de teste em ficheiros JSON
 - Testes de carga com k6, contra a instância local do Toolshop em Docker
@@ -164,7 +164,7 @@ Algumas observações sobre o comportamento da aplicação, encontradas ao inves
 
   Está coberto por um cenário `@bug @fail` no checkout.
 - **O carrinho promete um total e a fatura cobra outro** ([bug #5](https://github.com/evangelistaaj/Projeto-toolshop/issues/5)): com desconto ecológico e um produto de $10.10, o carrinho mostra $9.59 e a fatura cobra $9.60. O carrinho só arredonda no ecrã; a API arredonda o desconto e o total, cada um à sua conta. Com $29.97 os dois batem certo ($28.47), por isso a diferença só aparece quando o desconto de 5% cai a meio cêntimo. O lado da API está registado no [projeto de testes da API (#13)](https://github.com/evangelistaaj/Projeto-toolshop-api/issues/13). Coberto por um exemplo `@bug @fail`.
-- **Selo "ECO" no título do produto**: nos produtos com classificação CO₂ A ou B, o título da página do produto inclui o selo "ECO". Um teste que compare o nome exato falha; o teste procura o nome (único) dentro do título.
+- **Selo "ECO" no título do produto**: nos produtos com classificação CO₂ A ou B, o título da página do produto inclui o selo "ECO". Um teste que compare o nome exato falha; o teste procura o nome (único) dentro do título. O selo passou a ter um cenário próprio, com os limites A/B (mostra) e C/E (não mostra).
 - **Botão de remover sem nome acessível**: no carrinho, o botão que remove um produto é só um ícone "x", sem texto, rótulo nem `data-test`. Um leitor de ecrã não o anuncia, e o teste tem de o encontrar por CSS.
 - **Formato inconsistente do número da fatura**: as faturas novas têm um algarismo a menos do que as que já existiam (`INV-2026000120` e `INV-20260000034`). Se a lista alguma vez for ordenada como texto, fica fora de ordem.
 - **Confirmação em dois cliques**: no checkout, o botão "Confirm" valida primeiro o pagamento e só no segundo clique cria a encomenda. Parecia uma submissão duplicada, mas o código da aplicação mostra que é intencional.

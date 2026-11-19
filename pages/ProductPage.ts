@@ -18,6 +18,7 @@ export class ProductPage {
     readonly botaoCompare: Locator;
     readonly especificacoes: Locator;
     readonly contadorCarrinho: Locator;
+    readonly seloEco: Locator;
 
     // 2. ONDE encontrar cada elemento
     constructor(page: Page) {
@@ -37,6 +38,8 @@ export class ProductPage {
         this.especificacoes = page.getByTestId('specs-title');
         // O balão vermelho do carrinho, no menu do topo
         this.contadorCarrinho = page.getByTestId('cart-quantity');
+        // O selo "ECO" dos produtos ecológicos (CO2 A ou B), dentro do título
+        this.seloEco = page.getByTestId('eco-badge');
     }
 
     // 3. AÇÕES que se podem fazer nesta página

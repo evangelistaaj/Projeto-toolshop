@@ -90,3 +90,33 @@ Then('a fatura nas minhas faturas tem o total que o carrinho mostrava', async ({
         `o cliente viu ${contexto.totalCarrinho} no carrinho`,
     ).toHaveText(contexto.totalCarrinho);
 });
+
+// ---------- Selo "ECO" na página do produto ----------
+
+Given('que existe na loja o produto {string} com classificação CO2 {string}',
+    async ({ request, contexto }, nome: string, co2: string) => {
+        contexto.produtos ??= {};
+        contexto.produtos[nome] = await criarProduto(request, nome, 10.0, co2);
+    });
+
+When('abro a página do produto {string}', async ({ page, contexto }, nome: string) => {
+    const produto = contexto.produtos?.[nome];
+    if (!produto) {
+        throw new Error(`O produto "${nome}" não foi criado neste cenário. Falta o passo "Dado que existe na loja o produto..."?`);
+    }
+    const productPage = new ProductPage(page);
+    await productPage.abrir(produto.id);
+    await expect(productPage.nomeProduto).toContainText(produto.nome); // abrimos o produto certo?
+});
+
+Then(/^a página do produto (mostra|não mostra) o selo "ECO"$/, async ({ page }, resultado: string) => {
+    const productPage = new ProductPage(page);
+    if (resultado === 'mostra') {
+        await expect(productPage.seloEco).toBeVisible();
+        await expect(productPage.seloEco).toHaveText('ECO');
+    } else {
+        // O passo "abro a página do produto" já confirmou que a página carregou,
+        // por isso "não aparece" não passa só por a página estar vazia.
+        await expect(productPage.seloEco).toBeHidden();
+    }
+});

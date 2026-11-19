@@ -71,3 +71,17 @@ Funcionalidade: Desconto ecológico no carrinho
       Exemplos:
         | quantidade | preco | subtotal |
         |          1 | 10.10 |    10.10 |
+
+  Regra: A página do produto identifica os produtos ecológicos com o selo "ECO"
+
+    Esquema do Cenário: Um produto com classificação CO2 <co2> <resultado> o selo "ECO"
+      Dado que existe na loja o produto "Bamboo Hammer" com classificação CO2 "<co2>"
+      Quando abro a página do produto "Bamboo Hammer"
+      Então a página do produto <resultado> o selo "ECO"
+
+      Exemplos:
+        | co2 | resultado  |
+        | A   | mostra     |
+        | B   | mostra     |
+        | C   | não mostra |
+        | E   | não mostra |
