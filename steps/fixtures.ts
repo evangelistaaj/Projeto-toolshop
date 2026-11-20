@@ -1,6 +1,7 @@
 import { test as base, createBdd } from 'playwright-bdd';
 import { type Utilizador } from '../utils/dados';
 import { type ProdutoCriado, apagarProdutos } from '../utils/produtos';
+import { type Filtro } from '../utils/catalogo';
 
 // O que a caixa pode guardar
 type Contexto = {
@@ -9,6 +10,7 @@ type Contexto = {
     numeroFatura?: string; // guardado quando a confirmação da encomenda aparece
     produtos?: Record<string, ProdutoCriado>; // criados pelo cenário, pelo nome curto do Gherkin
     totalCarrinho?: string; // o total que o cliente viu no carrinho (ex.: "$9.59")
+    filtro?: Filtro; // categoria, ordenação e página escolhidas na lista de produtos
 };
 
 // Cada cenário recebe uma caixa nova e vazia

@@ -3,16 +3,21 @@ import { expect } from '@playwright/test';
 import { When, Then } from './fixtures';
 import { HomePage } from '../pages/HomePage';
 import { DataTable } from 'playwright-bdd';
+import { produtosDaApi } from '../utils/catalogo';
 
-When('filtro por {string}', async ({ page }, categoria: string) => {
+When('filtro por {string}', async ({ page, contexto }, categoria: string) => {
     const homePage = new HomePage(page);
     await homePage.filtrarPorCategoria(categoria);
+    // Filtrar volta à página 1
+    contexto.filtro = { ...contexto.filtro, categoria, pagina: undefined };
 });
 
 
-When('filtro pela categoria {string}', async ({ page }, categoria: string) => {
+When('filtro pela categoria {string}', async ({ page, contexto }, categoria: string) => {
     const homePage = new HomePage(page);
     await homePage.filtrarPorCategoria(categoria);
+    // Filtrar volta à página 1
+    contexto.filtro = { ...contexto.filtro, categoria, pagina: undefined };
 });
 
 
@@ -27,16 +32,32 @@ Then('vejo apenas os produtos:', async ({ page }, tabela: DataTable) => {
 });
 
 
+// Lista exata ("nem mais nem menos"), com a API como oráculo: os mesmos produtos que a API
+// devolve para a mesma categoria, ordem e página (ver utils/catalogo.ts). A ordem dentro
+// da página não conta, como no passo da tabela.
+Then('vejo os mesmos produtos que a API devolve para esse filtro', async ({ page, request, contexto }) => {
+    const esperados = (await produtosDaApi(request, contexto.filtro ?? {})).sort();
+    const homePage = new HomePage(page);
+
+    await expect(async () => {
+        const nomes = (await homePage.nomesProdutos.allTextContents()).map(nome => nome.trim()).sort();
+        expect(nomes).toEqual(esperados);
+    }).toPass({ timeout: 10_000 });
+});
+
+
 When('filtro por preço entre {int} e {int}', async ({ page, contexto }, min: number, max: number) => {
     const homePage = new HomePage(page);
     await homePage.filtrarPorPreco(min, max);
     contexto.faixaPreco = { min, max };
+    contexto.filtro = { ...contexto.filtro, preco: { min, max }, pagina: undefined };
 });
 
 
-When('vou para a página {int}', async ({ page }, numero: number) => {
+When('vou para a página {int}', async ({ page, contexto }, numero: number) => {
     const homePage = new HomePage(page);
     await homePage.irParaPagina(numero);
+    contexto.filtro = { ...contexto.filtro, pagina: numero };
 });
 
 
@@ -78,9 +99,12 @@ function obterOrdenacao(criterio: string): Ordenacao {
     return ordenacao;
 }
 
-When('ordeno os produtos por {string}', async ({ page }, criterio: string) => {
+When('ordeno os produtos por {string}', async ({ page, contexto }, criterio: string) => {
     const homePage = new HomePage(page);
-    await homePage.ordenarPor(obterOrdenacao(criterio).valor);
+    const { valor } = obterOrdenacao(criterio);
+    await homePage.ordenarPor(valor);
+    // Ordenar volta à página 1
+    contexto.filtro = { ...contexto.filtro, ordenacao: valor, pagina: undefined };
 });
 
 Then('os produtos aparecem ordenados por {string}', async ({ page }, criterio: string) => {

@@ -8,10 +8,11 @@ const ambienteLocal = /\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(baseURL);
 
 // Tags que ficam de fora:
 // @wip      - sempre
-// @sem-ci   - na CI (criam contas)
+// @sem-ci   - fora da Toolshop local (criam contas: o site público é partilhado e bloqueia
+//             quem cria muitas). Antes só saía na CI; um "npm test" no PC criava contas lá.
 // @so-local - fora da Toolshop local (provocam falhas de login e bloqueios de conta)
 const tagsExcluidas = ['@wip'];
-if (process.env.CI) tagsExcluidas.push('@sem-ci');
+if (process.env.CI || !ambienteLocal) tagsExcluidas.push('@sem-ci');
 if (!ambienteLocal) tagsExcluidas.push('@so-local');
 
 const testDir = defineBddConfig({

@@ -42,7 +42,7 @@ npm run typecheck                          # verificação de tipos (também cor
 
 ## Tags
 
-- `@sem-ci`: cria contas. Fica fora da CI.
+- `@sem-ci`: cria contas. Só corre na Toolshop local (fica de fora com o site público, também no PC).
 - `@so-local`: provoca falhas de login ou bloqueios de conta, ou cria produtos no catálogo.
   Só corre com o `BASE_URL` em `localhost`.
 - `@wip`: nunca corre.

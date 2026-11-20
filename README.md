@@ -135,7 +135,7 @@ Funcionalidade: Checkout
 
 | Execuções de cenários | Testes (× 3 browsers) | A passar ✅ | A reproduzir um bug 🐞 | Na CI (site público) | Bugs e dúvidas (issues) |
 |---|---|---|---|---|---|
-| 50 | 150 | 144 | 6 | 60 | 5 |
+| 53 | 159 | 153 | 6 | 60 | 5 |
 
 > Um esquema de cenário conta uma execução por exemplo, e cada execução corre em Chromium, Firefox e WebKit. As 2 execuções que reproduzem bugs (#4 e #5) estão marcadas com `@bug @fail`: o Playwright conta-as como esperadas enquanto o bug existir e avisa quando deixarem de falhar.
 
@@ -150,7 +150,8 @@ Funcionalidade: Checkout
 | Login (local) | Três tentativas falhadas | Mesmo com a password certa, a mensagem de conta bloqueada |
 | Pesquisa | Pesquisar `pliers`, `hammer` e `saw` | Todos os resultados contêm o termo (sem distinguir maiúsculas) |
 | Pesquisa | Pesquisar um produto que não existe | A mensagem de que não existem produtos |
-| Filtros | Categorias "Pliers" e "Other" (páginas 1 e 2) | A **lista exata** de produtos de cada página, depois de ordenar por nome |
+| Filtros | Categorias "Pliers" e "Other" (páginas 1 e 2) | A **lista exata** de produtos de cada página é a que a **API** devolve para os mesmos filtros (categoria, ordem, página e o preço do slider) — funciona no site público, onde outras pessoas criam produtos |
+| Filtros (local) | Os mesmos filtros, com os dados de demonstração | A lista fixa de produtos de cada página, como documentação dos dados |
 | Filtros | Preço: 0–200, 0–10, 10–50, 50–100, 100–200 (partições e limites) | Todos os resultados dentro do intervalo, com limites inclusivos |
 | Filtros | Preço entre 190 e 200 (intervalo sem produtos) | A mensagem de que não existem produtos |
 | Ordenação | Nome e preço, crescente e decrescente | A lista aparece na ordem pedida |
@@ -206,7 +207,7 @@ Funcionalidade: Checkout
 
 **Execução e evidências**
 - **Tags para controlar a execução**:
-  - `@sem-ci`: só corre localmente (cria contas ou encomendas)
+  - `@sem-ci`: só corre na Toolshop local (cria contas ou encomendas). Fica de fora sempre que o `BASE_URL` não é local, mesmo no PC, para nunca criar contas no site público
   - `@so-local`: só corre na instância local (provoca falhas de login e bloqueios de conta, ou cria produtos no catálogo)
   - `@slow`: dá o triplo do tempo a fluxos longos, como o checkout
   - `@com-conta` e `@convidado`: permitem correr só uma persona do checkout
@@ -241,6 +242,8 @@ Observações sobre a aplicação que não são bugs (ou que já estão registad
 - **Stock que se esgota**: cada execução do checkout compra uma unidade, e com execuções repetidas o produto esgota (o botão "Add to cart" fica desligado). A solução foi repor o stock pela API antes de cada compra; o campo `stock` é aceite pela API, apesar de não aparecer na documentação (Swagger).
 - **Bloqueio de contas partilhadas**: as contas de demonstração ficam bloqueadas após várias tentativas de login falhadas, o que motivou a criação de utilizadores próprios em cada cenário.
 - **Categorias vs. nomes de produtos**: alguns produtos pertencem a uma categoria sem a incluírem no nome (por exemplo, *Bolt Cutters* em *Pliers*), o que tornou necessária a validação pela lista exata de produtos.
+- **Produtos partilhados no site público**: no site público aparecem produtos criados por testes de outras pessoas (por exemplo, `Product-20261120-27a304` na categoria Pliers), o que fazia falhar a lista fixa dos filtros. A solução foi usar a API como oráculo, com os mesmos filtros da interface: a verificação continua exata e passa a servir em qualquer ambiente.
+- **Filtro de preço sempre ativo**: a lista de produtos envia sempre o intervalo do slider, por omissão de $1 a $100, mesmo sem o cliente lhe tocar. Por isso, a categoria "Other" tem 17 produtos na API, mas a interface mostra 15: os dois *Workbench* custam mais de $100. O slider está à vista, por isso não é um bug, mas um cliente distraído pode não perceber porque não encontra um produto mais caro.
 - **Valores limite sem resultados**: não existem produtos no intervalo de preço entre 190 e 200, um caso coberto por um cenário próprio.
 
 ---
