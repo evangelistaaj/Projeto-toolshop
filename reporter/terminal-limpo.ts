@@ -20,6 +20,11 @@ export default class TerminalLimpo implements Reporter {
     private raiz!: Suite;
     private inicio = Date.now();
     private sinais = 0;
+    private terminados = 0;
+    private total = 0;
+    // No terminal, uma linha de sinais vai até 80. Na CI (sem terminal), o log só mostra
+    // uma linha quando ela acaba: linhas de 10 sinais, com a contagem, para se ver o progresso.
+    private readonly porLinha = process.stdout.isTTY ? 80 : 10;
 
     printsToStdio() {
         return true;
@@ -27,7 +32,8 @@ export default class TerminalLimpo implements Reporter {
 
     onBegin(_config: unknown, suite: Suite) {
         this.raiz = suite;
-        process.stdout.write(`A correr ${suite.allTests().length} testes\n`);
+        this.total = suite.allTests().length;
+        process.stdout.write(`A correr ${this.total} testes\n`);
     }
 
     onTestEnd(test: TestCase, result: TestResult) {
@@ -39,7 +45,10 @@ export default class TerminalLimpo implements Reporter {
         else if (test.outcome() === 'skipped') sinal = cinzento('°');
         else sinal = vermelho('F');
         process.stdout.write(sinal);
-        if (++this.sinais % 80 === 0) process.stdout.write('\n');
+        if (!vaiRepetir) this.terminados++;
+        if (++this.sinais % this.porLinha === 0) {
+            process.stdout.write(process.stdout.isTTY ? '\n' : `  ${this.terminados}/${this.total}\n`);
+        }
     }
 
     onEnd(resultado: FullResult) {

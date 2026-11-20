@@ -33,8 +33,11 @@ jobs:
       - name: Verificar os tipos (TypeScript)
         run: npm run typecheck
 
+      # Normalmente leva cerca de 1 minuto. Se um mirror de pacotes encravar (já aconteceu:
+      # mais de 20 minutos parado), o passo falha aos 10 minutos em vez de esperar pelos 60 do job.
       - name: Instalar os browsers do Playwright
         run: npx playwright install --with-deps
+        timeout-minutes: 10
 
       - name: Correr os cenários
         run: npm test
