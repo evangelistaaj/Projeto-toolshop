@@ -32,13 +32,13 @@ Funcionalidade: Filtros de produtos
       Então vejo os mesmos produtos que a API devolve para esse filtro
 
   @so-local
-  Regra: Os dados de demonstração da Toolshop local têm estes produtos por categoria
-    Documentam os dados de demonstração (Sprint 5), como o cliente os vê. "Other" tem
+  Regra: O catálogo inicial da Toolshop local tem estes produtos por categoria
+    Documentam o catálogo inicial (Sprint 5), como o cliente os vê. "Other" tem
     17 produtos, mas 2 custam mais de $100 (Wooden Workbench e Workbench with Drawers)
     e o slider de preço, por omissão de $1 a $100, esconde-os: a interface mostra 15,
     9 na página 1 e 6 na página 2.
 
-    Cenário: Os produtos de demonstração da categoria Pliers
+    Cenário: Os produtos da categoria Pliers no catálogo inicial
       Dado que estou na página de produtos
       Quando filtro pela categoria "Pliers"
       Então vejo apenas os produtos:
@@ -48,7 +48,7 @@ Funcionalidade: Filtros de produtos
         | Long Nose Pliers   |
         | Slip Joint Pliers  |
 
-    Cenário: Os produtos de demonstração da categoria Other, na página 1
+    Cenário: Os produtos da categoria Other no catálogo inicial, na página 1
       Dado que estou na página de produtos
       Quando filtro pela categoria "Other"
       E ordeno os produtos por "nome crescente"
@@ -63,7 +63,7 @@ Funcionalidade: Filtros de produtos
         | Nuts and bolts        |
         | Protective Gloves     |
 
-    Cenário: Os produtos de demonstração da categoria Other, na página 2
+    Cenário: Os produtos da categoria Other no catálogo inicial, na página 2
       Dado que estou na página de produtos
       Quando filtro pela categoria "Other"
       E ordeno os produtos por "nome crescente"

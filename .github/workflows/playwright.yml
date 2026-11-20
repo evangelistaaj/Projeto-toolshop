@@ -49,3 +49,26 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
+
+      # O relatório também fica no GitHub Pages (só nos pushes para main).
+      - name: Enviar o relatório para o GitHub Pages
+        if: ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: playwright-report/
+
+  # Publica o relatório no GitHub Pages, mesmo quando há falhas (é quando mais interessa).
+  publicar:
+    needs: testes
+    if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.testes.result != 'cancelled' }}
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.publicacao.outputs.page_url }}
+    steps:
+      - name: Publicar no GitHub Pages
+        id: publicacao
+        uses: actions/deploy-pages@v4

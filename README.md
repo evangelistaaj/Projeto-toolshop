@@ -91,6 +91,8 @@ Com o `BASE_URL` em `localhost`, a configuração ajusta-se sozinha: corre os ce
 
 A cada `push` para o `main` (e em cada pull request), o GitHub Actions (`.github/workflows/playwright.yml`) instala as dependências e os browsers, corre os cenários contra o site público e publica o relatório HTML como artefacto (`playwright-report`). Também pode ser corrida à mão, no separador **Actions**.
 
+> 🌐 O relatório da última execução da CI no `main` está publicado no GitHub Pages: **[evangelistaaj.github.io/Projeto-toolshop](https://evangelistaaj.github.io/Projeto-toolshop/)**.
+
 > ℹ️ Os cenários `@sem-ci` e `@so-local` ficam de fora da CI: o site público usa proteção anti-bot (Cloudflare) nas áreas de conta para tráfego vindo de datacenters, como o GitHub Actions, e não se criam dados num ambiente partilhado. Num projeto real, a CI correria contra um ambiente de testes sem essa proteção.
 
 ---
@@ -319,3 +321,5 @@ Observações sobre a aplicação que não são bugs (ou que já estão registad
 ## 👤 Autor
 
 **Arthur Evangelista** · [GitHub](https://github.com/evangelistaaj)
+
+Licença [MIT](LICENSE): podes ler, usar e adaptar o código, mantendo a referência ao autor.
