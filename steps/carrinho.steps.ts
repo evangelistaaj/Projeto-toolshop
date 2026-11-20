@@ -37,3 +37,13 @@ Then('o total do carrinho é {int} vezes o preço de {string}',
         const totalEsperado = `$${((precoCentimos * quantidade) / 100).toFixed(2)}`;
         await expect(checkoutPage.totalCarrinho).toHaveText(totalEsperado);
     });
+
+// Acessibilidade: primeiro o controlo (o botão existe e vê-se), depois a regra (um leitor
+// de ecrã encontra-o como botão, com um nome que diz o que faz). Assim, se falhar, é pela
+// acessibilidade e não por o botão não estar lá.
+Then('o botão de remover {string} tem um nome que um leitor de ecrã anuncia',
+    async ({ page }, produto: string) => {
+        const checkoutPage = new CheckoutPage(page);
+        await expect(checkoutPage.botaoRemoverPorCss(produto), 'o botão de remover devia estar visível').toBeVisible();
+        await expect(checkoutPage.botaoRemoverAcessivel(produto), 'botão "remover" com nome acessível').toBeVisible({ timeout: 2_000 });
+    });

@@ -144,13 +144,24 @@ export class CheckoutPage {
         await respostaQuantidade;
     }
 
+    // O botão de remover, como o vê quem usa um leitor de ecrã: um botão com um nome que
+    // diga o que faz. É o que falta hoje (ver o bug de acessibilidade do carrinho).
+    botaoRemoverAcessivel(produto: string) {
+        return this.linhaProduto(produto).getByRole('button', { name: /remov|delete|apagar/i });
+    }
+
+    // O mesmo botão, encontrado pelo CSS (controlo: prova que o botão está lá).
+    botaoRemoverPorCss(produto: string) {
+        return this.linhaProduto(produto).locator('a.btn-danger');
+    }
+
     async removerProduto(produto: string) {
         const respostaRemover = this.page.waitForResponse(
             (r) => r.url().includes('/carts/') && r.request().method() === 'DELETE',
         );
         // O botão de remover não tem data-test nem nome acessível (só um ícone "x"):
         // CSS é a única forma de o encontrar. É também uma falha de acessibilidade.
-        await this.linhaProduto(produto).locator('a.btn-danger').click();
+        await this.botaoRemoverPorCss(produto).click();
         await respostaRemover;
     }
 
@@ -332,4 +343,4 @@ export class CheckoutPage {
         await expect(this.botaoFinalizar).toHaveText('Confirm');
         await this.botaoFinalizar.click();
     }
-}
+}

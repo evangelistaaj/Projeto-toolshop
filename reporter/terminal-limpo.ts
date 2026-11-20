@@ -91,6 +91,12 @@ export default class TerminalLimpo implements Reporter {
         process.stdout.write(`     ${ficheiro}\n`);
         const passo = this.passoQueFalhou(resultado.steps);
         if (passo) process.stdout.write(`     Passo: ${passo.title}\n`);
+        // Um cenário @fail (bug conhecido) que passou: não há erro para mostrar, por isso
+        // explicamos o que aconteceu. Normalmente quer dizer que o bug foi corrigido.
+        if (teste.expectedStatus === 'failed' && resultado.status === 'passed') {
+            process.stdout.write('     Esperava falhar (@fail, bug conhecido) e passou: o bug foi corrigido?\n');
+            process.stdout.write('     Se sim, tira o @fail e fecha o issue.\n');
+        }
         for (const linha of resumoDaFalha(resultado.error?.message)) process.stdout.write(linha.trim() ? `     ${linha}\n` : '\n');
         const evidencia = resultado.attachments.find((a) => a.path)?.path;
         if (evidencia) process.stdout.write(cinzento(`     Evidências: ${path.relative(process.cwd(), path.dirname(evidencia))}\n`));

@@ -135,9 +135,9 @@ Funcionalidade: Checkout
 
 | Execuções de cenários | Testes (× 3 browsers) | A passar ✅ | A reproduzir um bug 🐞 | Na CI (site público) | Bugs e dúvidas (issues) |
 |---|---|---|---|---|---|
-| 53 | 159 | 153 | 6 | 60 | 5 |
+| 54 | 162 | 153 | 9 | 63 | 6 |
 
-> Um esquema de cenário conta uma execução por exemplo, e cada execução corre em Chromium, Firefox e WebKit. As 2 execuções que reproduzem bugs (#4 e #5) estão marcadas com `@bug @fail`: o Playwright conta-as como esperadas enquanto o bug existir e avisa quando deixarem de falhar.
+> Um esquema de cenário conta uma execução por exemplo, e cada execução corre em Chromium, Firefox e WebKit. As 3 execuções que reproduzem bugs (#4, #5 e #6) estão marcadas com `@bug @fail`: o Playwright conta-as como esperadas enquanto o bug existir e avisa quando deixarem de falhar.
 
 **O que já é verificado**
 
@@ -157,6 +157,7 @@ Funcionalidade: Checkout
 | Ordenação | Nome e preço, crescente e decrescente | A lista aparece na ordem pedida |
 | Carrinho | Alterar a quantidade para 3 | O total é 3 × o preço mostrado (contas em cêntimos) |
 | Carrinho | Remover o único produto | O carrinho fica vazio |
+| Carrinho 🐞 | O botão de remover, como o encontra um leitor de ecrã | Um botão com um nome que diga "remover" — **falha: só um ícone "x", sem nome acessível** (bug [#6](https://github.com/evangelistaaj/Projeto-toolshop/issues/6)) |
 | Checkout (com conta) | Comprar com pagamento na entrega | A confirmação tem um número de fatura, e essa fatura aparece em "My invoices" |
 | Checkout (convidado) | Comprar com cada método de pagamento e a prestações (3, 6, 9 e 12 meses) | A confirmação tem um número de fatura |
 | Checkout (convidado) | Depois de finalizar a compra | O carrinho fica vazio |
@@ -217,7 +218,7 @@ Funcionalidade: Checkout
 - **Evidências automáticas em caso de falha**: screenshot, vídeo e trace
 - **Integração Contínua (CI)**: os cenários correm automaticamente no GitHub Actions a cada push
 
-> 🖥️ **Terminal limpo.** O Playwright usa um reporter próprio (`reporter/terminal-limpo.ts`), igual ao formatter do projeto da API: um sinal por teste enquanto corre (`·` passou, `F` falhou, `×` vai ser repetido, `±` instável) e, no fim, cada falha num bloco curto, com o browser, o cenário, o ficheiro `.feature`, o passo que falhou, o erro **sem a pilha nem o registo interno das esperas** e a pasta das evidências numa linha. O relatório HTML continua com tudo (`npm run relatorio`).
+> 🖥️ **Terminal limpo.** O Playwright usa um reporter próprio (`reporter/terminal-limpo.ts`), igual ao formatter do projeto da API: um sinal por teste enquanto corre (`·` passou, `F` falhou, `×` vai ser repetido, `±` instável) e, no fim, cada falha num bloco curto, com o browser, o cenário, o ficheiro `.feature`, o passo que falhou, o erro **sem a pilha nem o registo interno das esperas** e a pasta das evidências numa linha. O relatório HTML continua com tudo (`npm run relatorio`). Quando um cenário `@fail` passa (o bug foi corrigido), o bloco diz isso mesmo e lembra de tirar o `@fail` e fechar o issue.
 
 ---
 
@@ -230,6 +231,7 @@ Funcionalidade: Checkout
 | [#3](https://github.com/evangelistaaj/Projeto-toolshop/issues/3) | Registo: o servidor aceita um **distrito incoerente com a cidade** (ex.: *Amora* com o distrito *Porto*) | 🟡 Baixa (dúvida: a validação é esperada?) | Aberto |
 | [#4](https://github.com/evangelistaaj/Projeto-toolshop/issues/4) | Checkout: quando a API recusa a encomenda (422), o ecrã **não mostra nenhum aviso**, e o cliente pensa que comprou | 🔴 Alta | Aberto |
 | [#5](https://github.com/evangelistaaj/Projeto-toolshop/issues/5) | Desconto ecológico: o carrinho mostra **$9.59** e a fatura cobra **$9.60** (cada lado arredonda à sua maneira; o lado da API é o [#13 do projeto da API](https://github.com/evangelistaaj/Projeto-toolshop-api/issues/13)) | 🟡 Baixa | Aberto |
+| [#6](https://github.com/evangelistaaj/Projeto-toolshop/issues/6) | Carrinho: o botão de remover um produto (só um ícone "x") **não tem um nome acessível**; um leitor de ecrã não diz o que faz (WCAG 4.1.2, nível A) | 🟠 Média (acessibilidade) | Aberto |
 
 Os bugs com cenário executável estão marcados com `@bug @fail`: o cenário descreve o comportamento correto e falha enquanto o bug existir. Quando o bug for corrigido, o Playwright avisa, e é altura de tirar o `@fail`. Os bugs #1 e #2 são intermitentes: os testes contornam-nos (cada ação espera pela sua resposta), com um comentário e o link do issue no código.
 
