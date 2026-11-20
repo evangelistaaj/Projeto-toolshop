@@ -1,27 +1,99 @@
-# 🎭 Testes Automatizados com Playwright + BDD – Toolshop
+# 🎭 Projeto Toolshop – Testes E2E
 
-![Playwright Tests](https://github.com/evangelistaaj/Projeto-toolshop/actions/workflows/playwright.yml/badge.svg)
+Testes automatizados de ponta a ponta (E2E) da loja **Toolshop** ([Practice Software Testing](https://practicesoftwaretesting.com)), escritos em **Gherkin em português** e executados com **Playwright + playwright-bdd + TypeScript**.
 
-> **Em resumo:** testes E2E de uma loja online, escritos primeiro como cenários funcionais em **Gherkin (português)** e automatizados com **Playwright + TypeScript**. Destaques: Page Object Model, dados de teste gerados com **Faker**, preparação de dados pela **API**, sincronização sem esperas fixas, uma **instância local da loja em Docker**, CI no **GitHub Actions** e uma secção de [descobertas](#-descobertas-durante-a-automação) feitas ao investigar falhas.
+[![Testes E2E](https://github.com/evangelistaaj/Projeto-toolshop/actions/workflows/playwright.yml/badge.svg)](https://github.com/evangelistaaj/Projeto-toolshop/actions/workflows/playwright.yml)
+![Estado](https://img.shields.io/badge/estado-em%20constru%C3%A7%C3%A3o-yellow)
+![Node](https://img.shields.io/badge/node-26-339933?logo=nodedotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/typescript-7-3178C6?logo=typescript&logoColor=white)
+![Playwright](https://img.shields.io/badge/playwright-1.64-2EAD33?logo=playwright&logoColor=white)
+
+> **Em resumo:** testes E2E de uma loja online, escritos primeiro como cenários funcionais em **Gherkin (português)** e automatizados com **Playwright + TypeScript**. Destaques: Page Object Model, dados de teste gerados com **Faker**, preparação de dados pela **API**, sincronização sem esperas fixas, uma **instância local da loja em Docker**, CI no **GitHub Actions** e bugs documentados como cenários executáveis.
 >
-> 🇬🇧 **In short:** E2E test suite for an e-commerce demo app, written first as functional scenarios in Gherkin (Portuguese) and automated with Playwright + TypeScript, using the Page Object Model, Faker-generated test data, API-based test data setup, wait-free synchronization, a local Docker instance of the app and GitHub Actions CI.
+> 🇬🇧 **In short:** E2E test suite for an e-commerce demo app, written first as functional scenarios in Gherkin (Portuguese) and automated with Playwright + TypeScript, using the Page Object Model, Faker-generated test data, API-based test data setup, wait-free synchronization, a local Docker instance of the app and GitHub Actions CI. Known bugs are kept as executable scenarios.
 
-Projeto de automação de testes end-to-end (E2E) da aplicação de e-commerce [Practice Software Testing – Toolshop](https://practicesoftwaretesting.com/), desenvolvido com **Playwright**, **TypeScript** e **BDD (Gherkin)**.
+> 🚧 **Projeto em construção.** Este README acompanha o estado real do repositório: só descreve o que já está feito.
+
+---
+
+## 📌 Sobre o projeto
+
+Este repositório é a primeira parte do meu portfolio de automação de testes:
+
+| Projeto | O que testa | Stack |
+|---|---|---|
+| **Projeto-toolshop** (este) | Interface (E2E) | Playwright + playwright-bdd |
+| [Projeto-toolshop-api](https://github.com/evangelistaaj/Projeto-toolshop-api) | API REST | Playwright (`APIRequestContext`) + Cucumber |
 
 Os cenários são escritos primeiro como **testes funcionais em Gherkin (português)** e depois ligados à automação, seguindo o fluxo: **cenário funcional → step definitions → Page Objects**.
 
-> 🚧 Projeto em desenvolvimento: novos cenários são adicionados regularmente.
+---
 
 ## 🛠️ Tecnologias
 
-- [Playwright](https://playwright.dev/) – framework de testes E2E
-- [playwright-bdd](https://github.com/vitalets/playwright-bdd) – execução de cenários Gherkin com o Playwright
-- [Faker](https://fakerjs.dev/) – geração de dados de teste realistas (em português de Portugal)
-- Gherkin (em português)
-- TypeScript
-- Node.js
-- Docker (instância local do Toolshop)
-- Git e GitHub Actions
+| Ferramenta | Versão | Para que serve |
+|---|---|---|
+| [Node.js](https://nodejs.org) | 26 | Ambiente de execução |
+| [@playwright/test](https://playwright.dev) | 1.64 | Executa os testes nos browsers (Chromium, Firefox e WebKit) |
+| [playwright-bdd](https://github.com/vitalets/playwright-bdd) | 9.2 | Gera testes do Playwright a partir dos `.feature` |
+| [Faker](https://fakerjs.dev) | 10.6 | Dados de teste realistas, em português de Portugal |
+| [TypeScript](https://www.typescriptlang.org) | 7.0 | Linguagem dos passos e dos Page Objects |
+| [Docker](https://www.docker.com) | — | Instância local da Toolshop |
+
+---
+
+## 🚀 Como executar
+
+**Pré-requisitos:** Node.js 26 ou superior e Git. Para correr todos os cenários, a Toolshop a correr localmente com Docker ([instruções no repositório original](https://github.com/testsmith-io/practice-software-testing)).
+
+```bash
+git clone https://github.com/evangelistaaj/Projeto-toolshop.git
+cd Projeto-toolshop
+npm install
+npx playwright install
+npm test
+```
+
+A versão do Node.js está em `.nvmrc` e no campo `engines` do `package.json`.
+
+### ⏯️ Comandos
+
+| Comando | O que faz |
+|---|---|
+| `npm test` | Gera os testes a partir dos `.feature` (`bddgen`) e corre todos, nos 3 browsers |
+| `npm run test:ui` | Modo interativo do Playwright |
+| `npm run relatorio` | Abre o relatório HTML da última execução (não abre sozinho no fim dos testes) |
+| `npm run typecheck` | Verifica os tipos do TypeScript em todo o projeto, sem correr os testes |
+| `npm test -- checkout` | Só uma funcionalidade |
+| `npm test -- --project=chromium` | Só no Chromium |
+| `npm test -- --grep "@convidado"` | Só os cenários com uma tag |
+| `npm test -- --grep "preço"` | Só os cenários com "preço" no nome |
+| `npm test -- --headed` / `--debug` | Mostrar o browser / depurar passo a passo |
+
+> ℹ️ O `bddgen` gera os testes Playwright a partir dos ficheiros `.feature`, na pasta `.features-gen` (ignorada pelo Git). Os comandos `npm test` e `npm run test:ui` já o executam.
+
+### 🐳 Correr contra a Toolshop local (Docker)
+
+Por omissão, os testes correm contra o site público, que é partilhado e bloqueia quem cria muitas contas ou falha muitos logins. Para correr tudo (incluindo os cenários `@sem-ci` e `@so-local`), use uma instância local da Toolshop:
+
+```powershell
+# Na pasta do repositório da aplicação
+docker compose -f docker-compose.prod.yml up --pull missing -d
+
+# Neste projeto (PowerShell)
+$env:BASE_URL="http://localhost:4200"
+npm test
+```
+
+Com o `BASE_URL` em `localhost`, a configuração ajusta-se sozinha: corre os cenários `@so-local`, usa menos testes em paralelo e dá mais tempo a cada teste, porque o mesmo computador corre os browsers e a loja.
+
+### 🤖 Integração contínua
+
+A cada `push` para o `main` (e em cada pull request), o GitHub Actions (`.github/workflows/playwright.yml`) instala as dependências e os browsers, corre os cenários contra o site público e publica o relatório HTML como artefacto (`playwright-report`). Também pode ser corrida à mão, no separador **Actions**.
+
+> ℹ️ Os cenários `@sem-ci` e `@so-local` ficam de fora da CI: o site público usa proteção anti-bot (Cloudflare) nas áreas de conta para tráfego vindo de datacenters, como o GitHub Actions, e não se criam dados num ambiente partilhado. Num projeto real, a CI correria contra um ambiente de testes sem essa proteção.
+
+---
 
 ## 📝 Exemplo de cenário
 
@@ -57,55 +129,50 @@ Funcionalidade: Checkout
         | Gift Card        | cartão de presente     |
 ```
 
-## ✅ Cenários testados
+---
 
-**Registo de utilizador** (`features/registo.feature`)
-- Registo com dados válidos gerados aleatoriamente, com morada preenchida a partir do código postal
+## 📊 Estado atual
 
-**Login** (`features/login.feature`)
-- Login com uma conta acabada de criar
-- Login com utilizador inexistente (mensagem de erro)
-- Login com password errada
-- Conta bloqueada após 3 tentativas falhadas
+| Execuções de cenários | Testes (× 3 browsers) | A passar ✅ | A reproduzir um bug 🐞 | Na CI (site público) | Bugs e dúvidas (issues) |
+|---|---|---|---|---|---|
+| 50 | 150 | 144 | 6 | 60 | 5 |
 
-**Pesquisa de produtos** (`features/pesquisa.feature`)
-- Pesquisa por produto existente, validando que todos os resultados contêm o termo pesquisado
-- Pesquisa por produto inexistente (mensagem de que não existem produtos)
+> Um esquema de cenário conta uma execução por exemplo, e cada execução corre em Chromium, Firefox e WebKit. As 2 execuções que reproduzem bugs (#4 e #5) estão marcadas com `@bug @fail`: o Playwright conta-as como esperadas enquanto o bug existir e avisa quando deixarem de falhar.
 
-**Filtros, ordenação e paginação** (`features/filtros.feature`)
-- Filtro por intervalo de preço, com partições de equivalência e valores limite (incluindo um intervalo sem produtos)
-- Ordenação por nome e por preço, crescente e decrescente
-- Filtro por categoria, validando a lista exata de produtos esperados
-- Paginação de resultados filtrados
+**O que já é verificado**
 
-**Carrinho** (`features/carrinho.feature`)
-- O total acompanha a quantidade (preço × quantidade)
-- Remover o único produto deixa o carrinho vazio
+| Funcionalidade | Cenário | Verificações |
+|---|---|---|
+| Registo | Registo com dados válidos (gerados com o Faker) | A morada é a sugerida pelo código postal; depois do registo, a página de login |
+| Login | Login com uma conta acabada de criar | A página "My account" |
+| Login | Utilizador inexistente | A mensagem "Invalid email or password" |
+| Login (local) | Password errada | A mesma mensagem: não revela que a conta existe |
+| Login (local) | Três tentativas falhadas | Mesmo com a password certa, a mensagem de conta bloqueada |
+| Pesquisa | Pesquisar `pliers`, `hammer` e `saw` | Todos os resultados contêm o termo (sem distinguir maiúsculas) |
+| Pesquisa | Pesquisar um produto que não existe | A mensagem de que não existem produtos |
+| Filtros | Categorias "Pliers" e "Other" (páginas 1 e 2) | A **lista exata** de produtos de cada página, depois de ordenar por nome |
+| Filtros | Preço: 0–200, 0–10, 10–50, 50–100, 100–200 (partições e limites) | Todos os resultados dentro do intervalo, com limites inclusivos |
+| Filtros | Preço entre 190 e 200 (intervalo sem produtos) | A mensagem de que não existem produtos |
+| Ordenação | Nome e preço, crescente e decrescente | A lista aparece na ordem pedida |
+| Carrinho | Alterar a quantidade para 3 | O total é 3 × o preço mostrado (contas em cêntimos) |
+| Carrinho | Remover o único produto | O carrinho fica vazio |
+| Checkout (com conta) | Comprar com pagamento na entrega | A confirmação tem um número de fatura, e essa fatura aparece em "My invoices" |
+| Checkout (convidado) | Comprar com cada método de pagamento e a prestações (3, 6, 9 e 12 meses) | A confirmação tem um número de fatura |
+| Checkout (convidado) | Depois de finalizar a compra | O carrinho fica vazio |
+| Checkout (dados inválidos) | Email do convidado inválido; morada sem rua; cartão com número incompleto, validade no passado ou CVV de 2 algarismos | O aviso certo, e não se consegue avançar ou confirmar (cada exemplo muda **um** só campo) |
+| Checkout 🐞 | Encomenda recusada pela API (cidade que não corresponde ao código postal) | O cliente é avisado — **falha: o ecrã não mostra nada** (bug [#4](https://github.com/evangelistaaj/Projeto-toolshop/issues/4)) |
+| Desconto ecológico (local) | Maioria das unidades ecológicas | O carrinho mostra 5% de desconto, o subtotal e o total certos |
+| Desconto ecológico (local) | Exatamente metade (limite) | Sem desconto |
+| Desconto ecológico (local) | Mudar a quantidade até a maioria ser ecológica | O desconto aparece |
+| Desconto ecológico (local) | O cliente paga o total que viu no carrinho (controlo: 3 × 9.99) | O total da fatura em "My invoices" é o do carrinho |
+| Desconto ecológico (local) 🐞 | O mesmo, com 1 × 10.10 | **Falha: o carrinho mostra $9.59 e a fatura cobra $9.60** (bug [#5](https://github.com/evangelistaaj/Projeto-toolshop/issues/5)) |
+| Selo "ECO" (local) | Classificação CO₂ A, B, C e E | O selo aparece com A e B, e não aparece com C nem com E (os limites da regra) |
 
-**Desconto ecológico** (`features/desconto-ecologico.feature`), com produtos criados pela API para cada cenário (preço e classificação CO₂ à medida) e apagados no fim
-- Com mais de metade das unidades ecológicas (CO₂ A ou B), o carrinho mostra 5% de desconto, o subtotal e o total certos
-- Com exatamente metade, não há desconto
-- O desconto aparece quando, ao mudar a quantidade, a maioria das unidades passa a ser ecológica
-- A página do produto mostra o selo "ECO" nos produtos com classificação A ou B, e não o mostra com C nem com E (os limites da regra)
-- O cliente paga o total que viu no carrinho: compra completa, comparando o carrinho com a fatura em "My invoices" (com um exemplo de controlo e o [bug #5](https://github.com/evangelistaaj/Projeto-toolshop/issues/5) como cenário executável)
+> Os cenários marcados com "(local)" criam produtos ou provocam bloqueios de conta, e só correm na Toolshop local (tag `@so-local`).
 
-**Checkout** (`features/checkout.feature`), organizado por regras de negócio com `Regra:`
-- **Cliente com conta:** compra depois de iniciar sessão no checkout, e a fatura fica disponível nas suas faturas ("My invoices"), com o mesmo número que viu na confirmação
-- **Convidado:** compra com cada método de pagamento (pagamento na entrega, transferência bancária, cartão de crédito e cartão de presente)
-- **Convidado:** compra a prestações, com todas as opções (3, 6, 9 e 12 meses)
-- **Convidado:** o carrinho fica vazio depois de finalizar a compra
-- **Dados inválidos não deixam avançar:** email do convidado inválido, morada sem rua, e cartão de crédito com número incompleto, validade no passado ou CVV curto
-- **Bug documentado como cenário executável:** a encomenda recusada pela API tem de avisar o cliente (ver [descobertas](#-descobertas-durante-a-automação))
+---
 
-**Próximos passos**
-- ~~Projeto à parte de testes de API~~ feito: [Projeto-toolshop-api](https://github.com/evangelistaaj/Projeto-toolshop-api)
-- Ordenação por classificação CO₂
-- Massa de teste em ficheiros JSON
-- Testes de carga com k6, contra a instância local do Toolshop em Docker
-
-Todos os cenários correm em **3 browsers**: Chromium, Firefox e WebKit.
-
-## 🧱 Boas práticas aplicadas
+## 🧱 Boas práticas e decisões
 
 **Desenho dos cenários**
 - **BDD com Gherkin**: cenários legíveis para toda a equipa (QA, PO, desenvolvimento), que servem ao mesmo tempo de documentação e de testes executáveis
@@ -125,7 +192,7 @@ Todos os cenários correm em **3 browsers**: Chromium, Firefox e WebKit.
 - **Localizadores estáveis**: `getByTestId()` com o atributo `data-test`, e localizadores acessíveis (`getByRole`, `getByLabel`) quando não há test id ou quando contém identificadores internos (por exemplo, a linha da fatura pelo número, ou a quantidade pelo rótulo "Quantity for <produto>"); CSS só como exceção comentada
 - **Interação acessível com componentes complexos**: o slider de preço é controlado por teclado (Home/End, Page Up/Down, setas), sem depender de posições em píxeis
 - **`baseURL` configurado**: o endereço do site está definido num único sítio, e o mesmo código corre no site público ou na instância local
-- **Verificação de tipos**: `npx tsc --noEmit` confirma o projeto inteiro antes de correr os testes
+- **Verificação de tipos**: `npm run typecheck` confirma o projeto inteiro antes de correr os testes
 
 **Dados e estabilidade**
 - **Isolamento de dados de teste**: cada cenário cria os seus próprios dados com fábricas (`utils/dados.ts`) baseadas no Faker, sem depender de contas partilhadas
@@ -149,31 +216,36 @@ Todos os cenários correm em **3 browsers**: Chromium, Firefox e WebKit.
 - **Evidências automáticas em caso de falha**: screenshot, vídeo e trace
 - **Integração Contínua (CI)**: os cenários correm automaticamente no GitHub Actions a cada push
 
-> ℹ️ Cenários marcados com `@sem-ci` correm apenas localmente: o site usa proteção anti-bot (Cloudflare) nas áreas de conta para tráfego vindo de datacenters, como o GitHub Actions. Num projeto real, o CI correria contra um ambiente de testes sem essa proteção.
+---
 
-## 🔍 Descobertas durante a automação
+## 🐞 Bugs encontrados
 
-Algumas observações sobre o comportamento da aplicação, encontradas ao investigar falhas dos testes. As que podem ser defeitos foram registadas como Issues, com passos para reproduzir e evidências.
+| # | Bug | Severidade | Estado |
+|---|---|---|---|
+| [#1](https://github.com/evangelistaaj/Projeto-toolshop/issues/1) | O filtro de preço mostra **resultados desatualizados** quando o intervalo muda várias vezes seguidas (as respostas chegam fora de ordem) | 🟠 Média (intermitente) | Aberto |
+| [#2](https://github.com/evangelistaaj/Projeto-toolshop/issues/2) | Registo: o **distrito** preenchido pelo utilizador é **apagado** por uma procura de morada atrasada (a procura é feita duas vezes). O checkout tem o mesmo comportamento | 🟠 Média (intermitente) | Aberto |
+| [#3](https://github.com/evangelistaaj/Projeto-toolshop/issues/3) | Registo: o servidor aceita um **distrito incoerente com a cidade** (ex.: *Amora* com o distrito *Porto*) | 🟡 Baixa (dúvida: a validação é esperada?) | Aberto |
+| [#4](https://github.com/evangelistaaj/Projeto-toolshop/issues/4) | Checkout: quando a API recusa a encomenda (422), o ecrã **não mostra nenhum aviso**, e o cliente pensa que comprou | 🔴 Alta | Aberto |
+| [#5](https://github.com/evangelistaaj/Projeto-toolshop/issues/5) | Desconto ecológico: o carrinho mostra **$9.59** e a fatura cobra **$9.60** (cada lado arredonda à sua maneira; o lado da API é o [#13 do projeto da API](https://github.com/evangelistaaj/Projeto-toolshop-api/issues/13)) | 🟡 Baixa | Aberto |
 
-- **Resultados de filtro desatualizados** ([bug #1](https://github.com/evangelistaaj/Projeto-toolshop/issues/1)): quando o filtro de preço muda várias vezes seguidas (por exemplo, com o teclado), as respostas da API podem chegar fora de ordem e a lista mostra produtos que não correspondem ao filtro visível. Os testes contornam isto esperando por cada resposta antes da ação seguinte.
-- **Procura de morada duplicada** ([bug #2](https://github.com/evangelistaaj/Projeto-toolshop/issues/2)): o formulário de registo faz a procura do código postal duas vezes, e uma resposta atrasada pode apagar o distrito já preenchido pelo utilizador. O checkout tem o mesmo comportamento: a procura dispara 300 ms depois de mudar o código postal ou o número da porta, e uma vez por cada um desses campos.
-- **Distrito sem validação** ([questão #3](https://github.com/evangelistaaj/Projeto-toolshop/issues/3)): a procura do código postal preenche a rua e a cidade, mas não o distrito. Num teste manual, o servidor aceitou um distrito incoerente com a cidade (por exemplo, *Amora* com o distrito *Porto*). Fica a questão sobre se esta validação é esperada.
-- **Encomenda recusada sem aviso ao cliente** ([bug #4](https://github.com/evangelistaaj/Projeto-toolshop/issues/4)): no último passo do checkout, a API recusa a fatura (erro 422) e o ecrã fica parado no botão "Confirm", sem nenhuma mensagem. O cliente pensa que comprou, mas a encomenda nunca foi criada. No código da aplicação, o erro da criação da fatura é ignorado (`error: () => { }`). Acontece em dois casos:
-  - quando o distrito foi apagado pela procura de morada (ver bug #2);
-  - quando a cidade não é a que a procura devolve para aquele código postal. Aqui, a mensagem da API ainda engana: diz que o país não corresponde à morada, quando o problema é a cidade, e o campo cidade aceita qualquer texto.
+Os bugs com cenário executável estão marcados com `@bug @fail`: o cenário descreve o comportamento correto e falha enquanto o bug existir. Quando o bug for corrigido, o Playwright avisa, e é altura de tirar o `@fail`. Os bugs #1 e #2 são intermitentes: os testes contornam-nos (cada ação espera pela sua resposta), com um comentário e o link do issue no código.
 
-  Está coberto por um cenário `@bug @fail` no checkout.
-- **O carrinho promete um total e a fatura cobra outro** ([bug #5](https://github.com/evangelistaaj/Projeto-toolshop/issues/5)): com desconto ecológico e um produto de $10.10, o carrinho mostra $9.59 e a fatura cobra $9.60. O carrinho só arredonda no ecrã; a API arredonda o desconto e o total, cada um à sua conta. Com $29.97 os dois batem certo ($28.47), por isso a diferença só aparece quando o desconto de 5% cai a meio cêntimo. O lado da API está registado no [projeto de testes da API (#13)](https://github.com/evangelistaaj/Projeto-toolshop-api/issues/13). Coberto por um exemplo `@bug @fail`.
-- **Selo "ECO" no título do produto**: nos produtos com classificação CO₂ A ou B, o título da página do produto inclui o selo "ECO". Um teste que compare o nome exato falha; o teste procura o nome (único) dentro do título. O selo passou a ter um cenário próprio, com os limites A/B (mostra) e C/E (não mostra).
+## 🔍 Descobertas
+
+Observações sobre a aplicação que não são bugs (ou que já estão registadas noutro sítio), encontradas ao investigar falhas dos testes:
+
+- **Selo "ECO" no título do produto**: nos produtos com classificação CO₂ A ou B, o título da página do produto inclui o selo "ECO". Um teste que compare o nome exato falha; o teste procura o nome (único) dentro do título. O selo tem um cenário próprio, com os limites A/B (mostra) e C/E (não mostra).
 - **Botão de remover sem nome acessível**: no carrinho, o botão que remove um produto é só um ícone "x", sem texto, rótulo nem `data-test`. Um leitor de ecrã não o anuncia, e o teste tem de o encontrar por CSS.
-- **Formato inconsistente do número da fatura**: as faturas novas têm um algarismo a menos do que as que já existiam (`INV-2026000120` e `INV-20260000034`). Se a lista alguma vez for ordenada como texto, fica fora de ordem.
+- **Formato inconsistente do número da fatura**: as faturas novas têm um algarismo a menos do que as que já existiam (`INV-2026000120` e `INV-20260000034`). Está registado como bug no projeto da API ([#8](https://github.com/evangelistaaj/Projeto-toolshop-api/issues/8)).
 - **Confirmação em dois cliques**: no checkout, o botão "Confirm" valida primeiro o pagamento e só no segundo clique cria a encomenda. Parecia uma submissão duplicada, mas o código da aplicação mostra que é intencional.
 - **Stock que se esgota**: cada execução do checkout compra uma unidade, e com execuções repetidas o produto esgota (o botão "Add to cart" fica desligado). A solução foi repor o stock pela API antes de cada compra; o campo `stock` é aceite pela API, apesar de não aparecer na documentação (Swagger).
 - **Bloqueio de contas partilhadas**: as contas de demonstração ficam bloqueadas após várias tentativas de login falhadas, o que motivou a criação de utilizadores próprios em cada cenário.
 - **Categorias vs. nomes de produtos**: alguns produtos pertencem a uma categoria sem a incluírem no nome (por exemplo, *Bolt Cutters* em *Pliers*), o que tornou necessária a validação pela lista exata de produtos.
 - **Valores limite sem resultados**: não existem produtos no intervalo de preço entre 190 e 200, um caso coberto por um cenário próprio.
 
-## 📁 Estrutura do projeto
+---
+
+## 📂 Estrutura
 
 ```
 ├── .github/workflows/      # Pipeline de CI (GitHub Actions)
@@ -209,59 +281,33 @@ Algumas observações sobre o comportamento da aplicação, encontradas ao inves
 │   ├── dados.ts            # Fábricas de dados de teste (Faker): utilizador e pagamentos
 │   ├── produtos.ts         # Produtos de teste criados e apagados pela API (só na Toolshop local)
 │   └── stock.ts            # Reposição de stock pela API
+├── .nvmrc                  # Versão do Node.js
 ├── CLAUDE.md               # Convenções do projeto (para o assistente Claude)
 ├── playwright.config.ts    # Configuração do Playwright e do playwright-bdd
 └── tsconfig.json           # Configuração do TypeScript
 ```
 
-## ▶️ Como executar
+---
 
-**Pré-requisito:** [Node.js](https://nodejs.org/) (versão LTS)
+## 🗺️ Plano
 
-```bash
-# 1. Instalar as dependências
-npm install
+- [x] Registo e login (incluindo o bloqueio de conta)
+- [x] Pesquisa, filtros, ordenação e paginação
+- [x] Carrinho
+- [x] Checkout, com conta e como convidado, com todos os métodos de pagamento
+- [x] Desconto ecológico e selo "ECO", com produtos criados pela API
+- [x] Bugs conhecidos como cenários executáveis
+- [x] Integração contínua (GitHub Actions)
 
-# 2. Instalar os browsers do Playwright
-npx playwright install
+### 💡 Próximos passos
 
-# 3. Gerar os testes a partir dos cenários e correr tudo
-npm test
+- Massa de teste em ficheiros JSON (como no projeto da API)
+- Ordenação por classificação CO₂
+- Mensagens de falha mais legíveis no terminal
+- Testes de carga com k6, contra a instância local da Toolshop em Docker
 
-# 4. Abrir o relatório (não abre sozinho no fim dos testes)
-npm run relatorio
-```
-
-Outros comandos úteis:
-
-```bash
-npm run test:ui                         # Modo interativo
-npm test -- --project=chromium          # Só no Chromium
-npm test -- checkout                    # Só uma funcionalidade
-npm test -- --grep "@convidado"         # Só os cenários com uma tag
-npm test -- --grep "preço"              # Só os cenários com "preço" no nome
-npm test -- --headed                    # Mostrar o browser
-npm test -- --debug                     # Modo de depuração, passo a passo
-npx tsc --noEmit                        # Verificar os tipos do projeto
-```
-
-> ℹ️ O comando `bddgen` gera os testes Playwright a partir dos ficheiros `.feature` (na pasta `.features-gen`, ignorada pelo Git). Os atalhos `npm test` e `npm run test:ui` já o executam automaticamente.
-
-### 🐳 Correr contra uma instância local (Docker)
-
-Por omissão, os testes correm contra o site público, que é partilhado e bloqueia quem cria muitas contas ou falha muitos logins. Para correr tudo (incluindo os cenários `@sem-ci` e `@so-local`), use uma instância local do Toolshop com Docker, a partir do [repositório da aplicação](https://github.com/testsmith-io/practice-software-testing):
-
-```powershell
-# Na pasta do repositório da aplicação
-docker compose -f docker-compose.prod.yml up --pull missing -d
-
-# Neste projeto (PowerShell)
-$env:BASE_URL="http://localhost:4200"
-npm test
-```
-
-Com o `BASE_URL` em `localhost`, a configuração ajusta-se sozinha: corre os cenários `@so-local`, usa menos testes em paralelo e dá mais tempo a cada teste, porque o mesmo computador corre os browsers e a loja.
+---
 
 ## 👤 Autor
 
-**Arthur Evangelista**
+**Arthur Evangelista** · [GitHub](https://github.com/evangelistaaj)

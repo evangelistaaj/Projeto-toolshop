@@ -1,27 +1,48 @@
-name: Playwright Tests
+# Integração contínua: corre os cenários contra o site público, nos 3 browsers,
+# e publica o relatório HTML.
+name: Testes E2E
+
 on:
   push:
-    branches: [ main, master ]
+    branches: [main]
   pull_request:
-    branches: [ main, master ]
+  workflow_dispatch: # permite correr à mão, no separador Actions
+
+# Uma execução de cada vez por ramo: um push novo cancela a que estiver a correr.
+concurrency:
+  group: testes-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
+  testes:
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
-    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: lts/*
-    - name: Install dependencies
-      run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npm test
-    - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+      - name: Obter o projeto de testes
+        uses: actions/checkout@v6
+
+      - name: Instalar o Node.js (versão do .nvmrc)
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Instalar as dependências
+        run: npm ci
+
+      - name: Verificar os tipos (TypeScript)
+        run: npm run typecheck
+
+      - name: Instalar os browsers do Playwright
+        run: npx playwright install --with-deps
+
+      - name: Correr os cenários
+        run: npm test
+
+      - name: Publicar o relatório
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

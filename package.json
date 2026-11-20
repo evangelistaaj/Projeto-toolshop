@@ -1,15 +1,16 @@
 {
   "name": "toolshop",
   "version": "1.0.0",
-  "description": "",
+  "description": "Testes E2E da Toolshop (Practice Software Testing) com Playwright, playwright-bdd e TypeScript, em Gherkin (português).",
   "main": "index.js",
   "scripts": {
     "test": "bddgen && playwright test",
     "test:ui": "bddgen && playwright test --ui",
-    "relatorio": "playwright show-report"
+    "relatorio": "playwright show-report",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
-  "author": "",
+  "author": "Arthur Evangelista",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
@@ -18,5 +19,8 @@
     "@types/node": "^26.6.6",
     "playwright-bdd": "^9.2.1",
     "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=26"
   }
 }

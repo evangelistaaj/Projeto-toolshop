@@ -18,6 +18,7 @@ npm run test:ui                            # modo visual
 npm test -- login --project=chromium       # só um ficheiro, só um browser
 npm test -- --grep "preço"                 # só cenários com "preço" no nome
 npm run relatorio                          # relatório HTML (não abre sozinho)
+npm run typecheck                          # verificação de tipos (também corre na CI)
 ```
 
 - Ambiente: Windows, PowerShell e VS Code. Nos comandos, usa `curl.exe` (e não `curl`).
