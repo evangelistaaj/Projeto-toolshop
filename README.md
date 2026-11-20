@@ -62,7 +62,7 @@ A versão do Node.js está em `.nvmrc` e no campo `engines` do `package.json`.
 |---|---|
 | `npm test` | Gera os testes a partir dos `.feature` (`bddgen`) e corre todos, nos 3 browsers |
 | `npm run test:ui` | Modo interativo do Playwright |
-| `npm run relatorio` | Abre o relatório HTML da última execução (não abre sozinho no fim dos testes) |
+| `npm run relatorio` | Abre o relatório HTML da última execução, com tudo (não abre sozinho no fim dos testes) |
 | `npm run typecheck` | Verifica os tipos do TypeScript em todo o projeto, sem correr os testes |
 | `npm test -- checkout` | Só uma funcionalidade |
 | `npm test -- --project=chromium` | Só no Chromium |
@@ -217,6 +217,8 @@ Funcionalidade: Checkout
 - **Evidências automáticas em caso de falha**: screenshot, vídeo e trace
 - **Integração Contínua (CI)**: os cenários correm automaticamente no GitHub Actions a cada push
 
+> 🖥️ **Terminal limpo.** O Playwright usa um reporter próprio (`reporter/terminal-limpo.ts`), igual ao formatter do projeto da API: um sinal por teste enquanto corre (`·` passou, `F` falhou, `×` vai ser repetido, `±` instável) e, no fim, cada falha num bloco curto, com o browser, o cenário, o ficheiro `.feature`, o passo que falhou, o erro **sem a pilha nem o registo interno das esperas** e a pasta das evidências numa linha. O relatório HTML continua com tudo (`npm run relatorio`).
+
 ---
 
 ## 🐞 Bugs encontrados
@@ -280,6 +282,7 @@ Observações sobre a aplicação que não são bugs (ou que já estão registad
 │   ├── LoginPage.ts
 │   ├── ProductPage.ts
 │   └── RegisterPage.ts
+├── reporter/              # Reporter do terminal (falhas curtas, sem a pilha)
 ├── utils/
 │   ├── dados.ts            # Fábricas de dados de teste (Faker): utilizador e pagamentos
 │   ├── produtos.ts         # Produtos de teste criados e apagados pela API (só na Toolshop local)

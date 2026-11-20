@@ -49,10 +49,11 @@ export default defineConfig({
   workers: process.env.CI ? 1 : ambienteLocal ? 2 : undefined,
   timeout: ambienteLocal ? 60_000 : 30_000,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  // Na consola, só pontos e os detalhes das falhas (como no projeto da API).
+  // Na consola, um reporter próprio (reporter/terminal-limpo.ts), como no projeto da API:
+  // um sinal por teste e, no fim, cada falha num bloco curto, sem a pilha do node_modules.
   // O relatório HTML é gerado em playwright-report/ (a CI publica-o), mas não abre
   // sozinho: para o ver, "npm run relatorio".
-  reporter: [['dot'], ['html', { open: 'never' }]],
+  reporter: [['./reporter/terminal-limpo.ts'], ['html', { open: 'never' }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
